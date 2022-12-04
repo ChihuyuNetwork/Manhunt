@@ -65,6 +65,8 @@ class Plugin : JavaPlugin(), Listener {
         } else {
             GameMode.ADVENTURE
         }
+
+        ItemUtil.giveCompassIfNone(player)
     }
 
     @EventHandler
