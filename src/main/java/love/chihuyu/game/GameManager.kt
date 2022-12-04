@@ -96,6 +96,8 @@ object GameManager {
                     )
                 )
 
+                it.playSound(it.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+
                 it.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, 60 * 20, 254, false, false))
                 it.addPotionEffect(PotionEffect(PotionEffectType.REGENERATION, 60 * 20, 254, false, false))
             }
