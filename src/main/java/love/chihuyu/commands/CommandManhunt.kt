@@ -21,7 +21,7 @@ object CommandManhunt: Command("manhunt") {
             "start" -> {
                 if (args.size < 2) return
                 val rule = ManhuntMission.valueOf(args[1])
-                GameManager.prepare(rule)
+                GameManager.prepare(sender, rule)
 
                 plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
             }

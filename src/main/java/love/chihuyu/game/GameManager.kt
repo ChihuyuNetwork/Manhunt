@@ -1,6 +1,7 @@
 package love.chihuyu.game
 
 import love.chihuyu.Plugin.Companion.plugin
+import love.chihuyu.Plugin.Companion.prefix
 import love.chihuyu.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -9,6 +10,7 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
+import org.bukkit.command.CommandSender
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
@@ -55,11 +57,18 @@ object GameManager {
         }
     }
 
-    internal fun prepare(mission: ManhuntMission) {
+    internal fun prepare(sender: CommandSender, mission: ManhuntMission) {
         GameManager.mission = mission
 
-        if (hunters().isEmpty() || escapers().isEmpty() || plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null }) {
+        if (
+            hunters().isEmpty()
+            || escapers().isEmpty()
+            || plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null }
+            || board.getTeam(hunterTeamName) == null
+            || board.getTeam(escaperTeamName) == null
+        ) {
             grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
+            sender.sendMessage("$prefix 欠陥があったため自動で再グルーピングしました")
         }
 
         var remainCountdown = 5
