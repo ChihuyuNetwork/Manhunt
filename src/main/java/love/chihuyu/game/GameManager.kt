@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Team
 import java.time.Duration
 import java.time.Instant
+import kotlin.math.ceil
 
 object GameManager {
 
@@ -57,6 +58,10 @@ object GameManager {
     internal fun prepare(mission: ManhuntMission) {
         GameManager.mission = mission
 
+        if (hunters().isEmpty() || escapers().isEmpty() || plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null }) {
+            grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
+        }
+
         var remainCountdown = 5
         val countdown = plugin.runTaskTimer(0, 20) {
             plugin.server.onlinePlayers.forEach {
@@ -67,7 +72,7 @@ object GameManager {
                                 remainCountdown
                             )
                         ),
-                        Component.empty(),
+                        Component.text(mission.msg),
                         Title.Times.of(
                             Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                         )
