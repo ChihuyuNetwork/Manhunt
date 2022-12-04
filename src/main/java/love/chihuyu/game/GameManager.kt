@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
-import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.command.CommandSender
 import org.bukkit.potion.PotionEffect
@@ -60,16 +59,25 @@ object GameManager {
     internal fun prepare(sender: CommandSender, mission: ManhuntMission) {
         GameManager.mission = mission
 
-        if (
-            hunters().isEmpty()
-            || escapers().isEmpty()
-            || plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null }
-            || board.getTeam(hunterTeamName) == null
-            || board.getTeam(escaperTeamName) == null
-        ) {
-            grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
-            sender.sendMessage("$prefix 欠陥があったため自動で再グルーピングしました")
+        var error = ""
+        when {
+            hunters().isEmpty() || escapers().isEmpty() -> {
+                grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
+                error = "ハンターもしくはマンのチームが空だっただめ、再割り振りしました"
+            }
+            plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null } -> {
+                plugin.server.onlinePlayers.filter { board.getPlayerTeam(it) == null }.forEach {
+                    board.getTeam(hunterTeamName)?.addPlayer(it)
+                }
+                error = "ハンターもしくはマンのチームに所属していないプレイヤーがいたため、ハンターに割り振りました"
+            }
+            board.getTeam(hunterTeamName) == null || board.getTeam(escaperTeamName) == null -> {
+                grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
+                error = "ハンターもしくはマンのチームがなかったため、再割り振りしました"
+            }
         }
+
+        if (error.isNotEmpty()) sender.sendMessage("$prefix $error")
 
         var remainCountdown = 5
         val countdown = plugin.runTaskTimer(0, 20) {
@@ -81,9 +89,9 @@ object GameManager {
                                 remainCountdown
                             )
                         ),
-                        Component.text(mission.msg),
+                        Component.empty(),
                         Title.Times.of(
-                            Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
+                            Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(0)
                         )
                     )
                 )
@@ -109,9 +117,9 @@ object GameManager {
                 it.showTitle(
                     Title.title(
                         Component.text("${ChatColor.GREEN}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームスタート！"),
-                        Component.empty(),
+                        Component.text(mission.msg),
                         Title.Times.of(
-                            Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
+                            Duration.ofSeconds(1), Duration.ofSeconds(7), Duration.ofSeconds(1)
                         )
                     )
                 )
@@ -131,7 +139,7 @@ object GameManager {
         endEpoch = Instant.now().plus(Duration.ofHours(mission.hour)).epochSecond
 
         taskTickGame = plugin.runTaskTimer(0, 20) {
-            BossbarUtil.updateBossbar(NamespacedKey(plugin, "manhunt"))
+            BossbarUtil.updateBossbar()
         }
 
         taskTickEnd = plugin.runTaskLater((endEpoch - startEpoch) * 20L) {

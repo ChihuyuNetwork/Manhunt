@@ -10,14 +10,18 @@ import org.bukkit.boss.BarStyle
 
 object BossbarUtil {
 
-    fun updateBossbar(key: NamespacedKey) {
-        val bossbar = Bukkit.getBossBar(key) ?: Bukkit.createBossBar(key, "残り時間", BarColor.RED, BarStyle.SOLID)
-        val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
+    fun updateBossbar() {
+        plugin.server.onlinePlayers.forEach {
+            val key = NamespacedKey(plugin, "manhunt-${it.uniqueId}")
+            val bossbar = Bukkit.getBossBar(key) ?: Bukkit.createBossBar(key, "残り時間", BarColor.RED, BarStyle.SOLID)
+            val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
+            val msg = if (it in GameManager.hunters()) "マンを全員殺せ" else mission.msg
 
-        bossbar.setTitle("残り時間: ${EpochUtil.formatTime(remains)} │ ${mission.msg}")
-        bossbar.isVisible = true
-        bossbar.removeAll()
-        plugin.server.onlinePlayers.forEach { bossbar.addPlayer(it) }
-        bossbar.progress = remains * +(1.0 / (GameManager.endEpoch - GameManager.startEpoch))
+            bossbar.setTitle("残り時間: ${EpochUtil.formatTime(remains)} | $msg")
+            bossbar.isVisible = true
+            bossbar.removeAll()
+            bossbar.progress = remains * +(1.0 / (GameManager.endEpoch - GameManager.startEpoch))
+            bossbar.addPlayer(it)
+        }
     }
 }
