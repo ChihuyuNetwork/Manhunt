@@ -3,6 +3,7 @@ package love.chihuyu.game
 import love.chihuyu.Plugin.Companion.plugin
 import love.chihuyu.utils.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -11,13 +12,14 @@ import org.bukkit.Sound
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.scoreboard.Team
 import java.time.Duration
 import java.time.Instant
 
 object GameManager {
 
-    val hunterTeamName = "hunter"
-    val escaperTeamName = "escaper"
+    private const val hunterTeamName = "hunter"
+    private const val escaperTeamName = "escaper"
     val board = plugin.server.scoreboardManager.mainScoreboard
 
     fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == hunterTeamName }.toSet()
@@ -31,7 +33,28 @@ object GameManager {
     var endEpoch = EpochUtil.nowEpoch()
     var startEpoch = EpochUtil.nowEpoch()
 
-    fun prepare(mission: ManhuntMission) {
+    internal fun grouping(escapers: Int) {
+        board.teams.forEach(Team::unregister)
+
+        val hunterTeam = board.registerNewTeam(hunterTeamName)
+        val escaperTeam = board.registerNewTeam(escaperTeamName)
+
+        hunterTeam.color(NamedTextColor.GOLD)
+        escaperTeam.color(NamedTextColor.RED)
+
+        hunters().forEach { hunterTeam.removePlayer(it) }
+        escapers().forEach { escaperTeam.removePlayer(it) }
+
+        repeat(escapers) {
+            escaperTeam.addPlayer(plugin.server.onlinePlayers.minus(escapers()).random())
+        }
+
+        plugin.server.onlinePlayers.minus(escapers()).forEach {
+            hunterTeam.addPlayer(it)
+        }
+    }
+
+    internal fun prepare(mission: ManhuntMission) {
         GameManager.mission = mission
 
         var remainCountdown = 5
@@ -45,7 +68,7 @@ object GameManager {
                             )
                         ),
                         Component.empty(),
-                        Title.Times.times(
+                        Title.Times.of(
                             Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                         )
                     )
@@ -56,7 +79,6 @@ object GameManager {
             }
 
             hunters().forEach {
-                it.addPotionEffect(PotionEffect(PotionEffectType.DARKNESS, 60 * 20, 254, false, false))
                 it.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 60 * 20, 254, false, false))
                 it.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, 60 * 20, 254, false, false))
                 it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 60 * 20, 254, false, false))
@@ -74,14 +96,14 @@ object GameManager {
                     Title.title(
                         Component.text("${ChatColor.GREEN}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームスタート！"),
                         Component.empty(),
-                        Title.Times.times(
+                        Title.Times.of(
                             Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                         )
                     )
                 )
 
                 it.gameMode = GameMode.ADVENTURE
-                it.playSound(it, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
+                it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
             }
 
             start(mission)
@@ -119,7 +141,7 @@ object GameManager {
                 Title.title(
                     Component.text("${ChatColor.RED}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームオーバー！"),
                     Component.text(if (missioned) "マンの勝ち" else "ハンターの勝ち"),
-                    Title.Times.times(
+                    Title.Times.of(
                         Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                     )
                 )
