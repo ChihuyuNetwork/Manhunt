@@ -4,6 +4,7 @@ import org.bukkit.Material
 import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
@@ -37,5 +38,9 @@ object ItemUtil {
 
         item.itemMeta = meta
         return item
+    }
+
+    fun giveCompassIfNone(player: Player) {
+        if (player.inventory.none { it.itemMeta.hasCustomModelData() }) player.inventory.addItem(create(Material.COMPASS, customModelData = 1))
     }
 }
