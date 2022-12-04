@@ -7,16 +7,21 @@ import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.started
 import love.chihuyu.game.MissionChecker
 import love.chihuyu.utils.ItemUtil
+import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.inventory.meta.CompassMeta
 import org.bukkit.plugin.java.JavaPlugin
 
 class Plugin : JavaPlugin(), Listener {
@@ -24,6 +29,7 @@ class Plugin : JavaPlugin(), Listener {
     companion object {
         lateinit var plugin: JavaPlugin
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
+        val compassTargets = mutableMapOf<Player, Player>()
     }
 
     init {
@@ -88,5 +94,24 @@ class Plugin : JavaPlugin(), Listener {
             e.message = e.message.substringAfter('!')
         }
         e.format = "$teamPrefix ${player.name}: ${e.message}"
+    }
+
+    @EventHandler
+    fun compassTracker(e: PlayerInteractEvent) {
+        val player = e.player
+        val action = e.action
+        val item = e.item ?: return
+        if (action != Action.RIGHT_CLICK_BLOCK && action != Action.RIGHT_CLICK_AIR) return
+        if (item.type != Material.COMPASS) return
+
+        val nextPlayer = plugin.server.onlinePlayers.toList()[plugin.server.onlinePlayers.indexOf(compassTargets[player]).inc() % plugin.server.onlinePlayers.toList().size]
+        player.compassTarget = nextPlayer.location
+        compassTargets[player] = nextPlayer
+
+        val meta = item.itemMeta as CompassMeta
+        meta.isLodestoneTracked = false
+        meta.lodestone = nextPlayer.location
+        meta.displayName(Component.text(nextPlayer.name))
+        player.inventory.itemInMainHand.itemMeta = meta
     }
 }

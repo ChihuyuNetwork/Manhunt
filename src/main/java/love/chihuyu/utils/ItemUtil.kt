@@ -41,6 +41,6 @@ object ItemUtil {
     }
 
     fun giveCompassIfNone(player: Player) {
-        if (player.inventory.none { it.itemMeta.hasCustomModelData() }) player.inventory.addItem(create(Material.COMPASS, customModelData = 1))
+        if (player.inventory.filterNotNull().none { it.type == Material.COMPASS }) player.inventory.addItem(create(Material.COMPASS))
     }
 }

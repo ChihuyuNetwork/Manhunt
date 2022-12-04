@@ -31,7 +31,7 @@ object ManhuntGroup {
                 hunters().forEach { hunterTeam.removePlayer(it) }
                 escapers().forEach { escaperTeam.removePlayer(it) }
 
-                (0..escapersCount).forEach { _ ->
+                repeat(escapersCount) {
                     escaperTeam.addPlayer(plugin.server.onlinePlayers.minus(escapers()).random())
                 }
 
