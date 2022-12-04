@@ -1,7 +1,6 @@
 package love.chihuyu.game
 
 import love.chihuyu.game.GameManager.mission
-import love.chihuyu.rules.ManhuntMission
 import org.bukkit.World
 import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler

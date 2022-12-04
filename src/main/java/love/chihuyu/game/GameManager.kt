@@ -1,7 +1,6 @@
 package love.chihuyu.game
 
 import love.chihuyu.Plugin.Companion.plugin
-import love.chihuyu.rules.ManhuntMission
 import love.chihuyu.utils.BossbarUtil
 import love.chihuyu.utils.EpochUtil
 import love.chihuyu.utils.runTaskLater

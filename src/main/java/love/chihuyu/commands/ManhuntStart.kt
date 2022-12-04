@@ -6,7 +6,7 @@ import dev.jorel.commandapi.arguments.MultiLiteralArgument
 import dev.jorel.commandapi.executors.CommandExecutor
 import love.chihuyu.Plugin.Companion.prefix
 import love.chihuyu.game.GameManager
-import love.chihuyu.rules.ManhuntMission
+import love.chihuyu.game.ManhuntMission
 
 object ManhuntStart {
 
