@@ -23,7 +23,7 @@ class Plugin : JavaPlugin(), Listener {
 
     companion object {
         lateinit var plugin: JavaPlugin
-        val prefix = "${ChatColor.GOLD}[MH] ${ChatColor.RESET}"
+        val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
     }
 
     init {
