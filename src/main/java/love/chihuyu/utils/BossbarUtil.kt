@@ -17,7 +17,7 @@ object BossbarUtil {
             val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
             val msg = if (it in GameManager.hunters()) "マンを全員殺せ" else mission.msg
 
-            bossbar.setTitle("残り時間: ${EpochUtil.formatTime(remains)} | $msg")
+            bossbar.setTitle("$msg ≫ ${EpochUtil.formatTime(remains)}")
             bossbar.isVisible = true
             bossbar.removeAll()
             bossbar.progress = remains * +(1.0 / (GameManager.endEpoch - GameManager.startEpoch))
