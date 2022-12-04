@@ -2,5 +2,8 @@ name: Manhunt
 version: '1.0.0'
 main: love.chihuyu.Plugin
 authors: [ Hirosuke ]
-depend: [CommandAPI]
-api-version: 1.19
+api-version: 1.16
+commands:
+  manhunt:
+    aliases:
+      - mh

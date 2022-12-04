@@ -6,7 +6,9 @@ import love.chihuyu.game.GameManager.escapers
 import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.started
 import love.chihuyu.game.MissionChecker
+import love.chihuyu.utils.CompassUtil
 import love.chihuyu.utils.ItemUtil
+import love.chihuyu.utils.runTaskLater
 import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -17,17 +19,14 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.AsyncPlayerChatEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerRespawnEvent
-import org.bukkit.inventory.meta.CompassMeta
+import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
 
 class Plugin : JavaPlugin(), Listener {
 
     companion object {
         lateinit var plugin: JavaPlugin
+        var cooltimed = mutableSetOf<Player>()
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
         val compassTargets = mutableMapOf<Player, Player>()
     }
@@ -40,7 +39,7 @@ class Plugin : JavaPlugin(), Listener {
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
 
-        CommandManhunt.main.register()
+        CommandManhunt.register()
     }
 
     @EventHandler
@@ -51,7 +50,7 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
         e.drops.removeIf { it.itemMeta.hasCustomModelData() }
-        if (e.player in escapers()) e.player.gameMode = GameMode.SPECTATOR
+        if (e.entity in escapers()) e.entity.gameMode = GameMode.SPECTATOR
     }
 
     @EventHandler
@@ -78,19 +77,18 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onChat(e: AsyncPlayerChatEvent) {
         val player = e.player
-        val teamColor = GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.WHITE
-        var teamPrefix =
+        val isAll = e.message.startsWith('!')
+        val teamColor = if (isAll) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.WHITE
+        val teamPrefix =
             when (player) {
                 in hunters() -> "$teamColor[H]${ChatColor.RESET}"
                 in escapers() -> "$teamColor[E]${ChatColor.RESET}"
                 else -> "$teamColor[N]${ChatColor.RESET}"
             }
-        val isAll = e.message.startsWith('!')
 
         e.recipients.removeIf { !isAll && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
 
         if (isAll) {
-            teamPrefix = "$teamColor[A]${ChatColor.RESET}"
             e.message = e.message.substringAfter('!')
         }
         e.format = "$teamPrefix ${player.name}: ${e.message}"
@@ -105,13 +103,23 @@ class Plugin : JavaPlugin(), Listener {
         if (item.type != Material.COMPASS) return
 
         val nextPlayer = plugin.server.onlinePlayers.toList()[plugin.server.onlinePlayers.indexOf(compassTargets[player]).inc() % plugin.server.onlinePlayers.toList().size]
-        player.compassTarget = nextPlayer.location
         compassTargets[player] = nextPlayer
 
-        val meta = item.itemMeta as CompassMeta
-        meta.isLodestoneTracked = false
-        meta.lodestone = nextPlayer.location
-        meta.displayName(Component.text(nextPlayer.name))
-        player.inventory.itemInMainHand.itemMeta = meta
+        CompassUtil.setTargetTo(player, nextPlayer)
+        player.sendActionBar(Component.text("Target to: ${nextPlayer.name}"))
+    }
+
+    @EventHandler
+    fun updateCompassTracking(e: PlayerMoveEvent) {
+        val player = e.player
+        if (player in cooltimed) return
+        compassTargets.filter { it.value == player }.forEach { (hunter, target) ->
+            CompassUtil.setTargetTo(hunter, target)
+            hunter.sendActionBar(Component.text("Target to: ${target.name}"))
+        }
+
+        cooltimed.add(player)
+
+        plugin.runTaskLater(20) { cooltimed.remove(player) }
     }
 }
