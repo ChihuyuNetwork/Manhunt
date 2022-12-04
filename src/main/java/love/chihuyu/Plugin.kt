@@ -106,7 +106,7 @@ class Plugin : JavaPlugin(), Listener {
         compassTargets[player] = nextPlayer
 
         CompassUtil.setTargetTo(player, nextPlayer)
-        player.sendActionBar(Component.text("Target to: ${nextPlayer.name}"))
+        player.sendActionBar(Component.text("追跡中 ≫ ${nextPlayer.name}"))
     }
 
     @EventHandler
@@ -115,7 +115,7 @@ class Plugin : JavaPlugin(), Listener {
         if (player in cooltimed) return
         compassTargets.filter { it.value == player }.forEach { (hunter, target) ->
             CompassUtil.setTargetTo(hunter, target)
-            hunter.sendActionBar(Component.text("Target to: ${target.name}"))
+            hunter.sendActionBar(Component.text("追跡中 ≫ ${target.name}"))
         }
 
         cooltimed.add(player)

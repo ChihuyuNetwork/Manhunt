@@ -1,8 +1,10 @@
 package love.chihuyu.commands
 
 import love.chihuyu.Plugin
+import love.chihuyu.Plugin.Companion.plugin
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.ManhuntMission
+import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
 
 object CommandManhunt: Command("manhunt") {
@@ -14,14 +16,14 @@ object CommandManhunt: Command("manhunt") {
                 if (args.size < 2) return
                 GameManager.grouping(Integer.parseInt(args[1]))
 
-                sender.sendMessage("${Plugin.prefix} Successfully grouped escapers and hunters.")
+                sender.sendMessage("${Plugin.prefix} マンとハンターをグルーピングしました")
             }
             "start" -> {
                 if (args.size < 2) return
                 val rule = ManhuntMission.valueOf(args[1])
                 GameManager.prepare(rule)
 
-                sender.sendMessage("${Plugin.prefix} Game started.")
+                plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
             }
         }
     }
