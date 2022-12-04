@@ -1,10 +1,7 @@
 package love.chihuyu.game
 
 import love.chihuyu.Plugin.Companion.plugin
-import love.chihuyu.utils.BossbarUtil
-import love.chihuyu.utils.EpochUtil
-import love.chihuyu.utils.runTaskLater
-import love.chihuyu.utils.runTaskTimer
+import love.chihuyu.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.ChatColor
@@ -107,6 +104,7 @@ object GameManager {
 
         plugin.server.onlinePlayers.forEach {
             it.gameMode = GameMode.SURVIVAL
+            ItemUtil.giveCompassIfNone(it)
         }
     }
 
