@@ -2,8 +2,8 @@ package love.chihuyu
 
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.game.GameManager
-import love.chihuyu.game.GameManager.escapers
 import love.chihuyu.game.GameManager.hunters
+import love.chihuyu.game.GameManager.runners
 import love.chihuyu.game.GameManager.started
 import love.chihuyu.game.MissionChecker
 import love.chihuyu.utils.CompassUtil
@@ -50,7 +50,7 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
         e.drops.removeIf { it.itemMeta.hasCustomModelData() }
-        if (e.entity in escapers()) e.entity.gameMode = GameMode.SPECTATOR
+        if (e.entity in runners()) e.entity.gameMode = GameMode.SPECTATOR
     }
 
     @EventHandler
@@ -82,7 +82,7 @@ class Plugin : JavaPlugin(), Listener {
         val teamPrefix =
             when (player) {
                 in hunters() -> "$teamColor[H]${ChatColor.RESET}"
-                in escapers() -> "$teamColor[E]${ChatColor.RESET}"
+                in runners() -> "$teamColor[E]${ChatColor.RESET}"
                 else -> "$teamColor[N]${ChatColor.RESET}"
             }
 

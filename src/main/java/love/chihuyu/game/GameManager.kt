@@ -21,11 +21,11 @@ import kotlin.math.ceil
 object GameManager {
 
     private const val hunterTeamName = "hunter"
-    private const val escaperTeamName = "escaper"
+    private const val runnerTeamName = "runner"
     val board = plugin.server.scoreboardManager.mainScoreboard
 
     fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == hunterTeamName }.toSet()
-    fun escapers() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == escaperTeamName }.toSet()
+    fun runners() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == runnerTeamName }.toSet()
 
     var started: Boolean = false
     lateinit var taskTickGame: BukkitTask
@@ -39,19 +39,19 @@ object GameManager {
         board.teams.forEach(Team::unregister)
 
         val hunterTeam = board.registerNewTeam(hunterTeamName)
-        val escaperTeam = board.registerNewTeam(escaperTeamName)
+        val runnerTeam = board.registerNewTeam(runnerTeamName)
 
         hunterTeam.color(NamedTextColor.GOLD)
-        escaperTeam.color(NamedTextColor.RED)
+        runnerTeam.color(NamedTextColor.RED)
 
         hunters().forEach { hunterTeam.removePlayer(it) }
-        escapers().forEach { escaperTeam.removePlayer(it) }
+        runners().forEach { runnerTeam.removePlayer(it) }
 
         repeat(escapers) {
-            escaperTeam.addPlayer(plugin.server.onlinePlayers.minus(escapers()).random())
+            runnerTeam.addPlayer(plugin.server.onlinePlayers.minus(runners()).random())
         }
 
-        plugin.server.onlinePlayers.minus(escapers()).forEach {
+        plugin.server.onlinePlayers.minus(runners()).forEach {
             hunterTeam.addPlayer(it)
         }
     }
@@ -61,19 +61,19 @@ object GameManager {
 
         var error = ""
         when {
-            hunters().isEmpty() || escapers().isEmpty() -> {
+            hunters().isEmpty() || runners().isEmpty() -> {
                 grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
-                error = "ハンターもしくはマンのチームが空だっただめ、再割り振りしました"
+                error = "ハンターもしくはランナーのチームが空だっただめ、再割り振りしました"
             }
             plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null } -> {
                 plugin.server.onlinePlayers.filter { board.getPlayerTeam(it) == null }.forEach {
                     board.getTeam(hunterTeamName)?.addPlayer(it)
                 }
-                error = "ハンターもしくはマンのチームに所属していないプレイヤーがいたため、ハンターに割り振りました"
+                error = "ハンターもしくはランナーのチームに所属していないプレイヤーがいたため、ハンターに割り振りました"
             }
-            board.getTeam(hunterTeamName) == null || board.getTeam(escaperTeamName) == null -> {
+            board.getTeam(hunterTeamName) == null || board.getTeam(runnerTeamName) == null -> {
                 grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
-                error = "ハンターもしくはマンのチームがなかったため、再割り振りしました"
+                error = "ハンターもしくはランナーのチームがなかったため、再割り振りしました"
             }
         }
 
@@ -164,7 +164,7 @@ object GameManager {
             it.showTitle(
                 Title.title(
                     Component.text("${ChatColor.RED}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームオーバー！"),
-                    Component.text(if (missioned) "マンの勝ち" else "ハンターの勝ち"),
+                    Component.text(if (missioned) "ランナーの勝ち" else "ハンターの勝ち"),
                     Title.Times.of(
                         Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                     )

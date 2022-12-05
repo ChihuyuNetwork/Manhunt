@@ -15,7 +15,7 @@ object MissionChecker : Listener {
 
     @EventHandler
     fun aliveEscapers(e: PlayerDeathEvent) {
-        if (GameManager.escapers().none { started && it.gameMode != GameMode.SPECTATOR }) GameManager.end(false)
+        if (GameManager.runners().none { started && it.gameMode != GameMode.SPECTATOR }) GameManager.end(false)
     }
 
     @EventHandler
