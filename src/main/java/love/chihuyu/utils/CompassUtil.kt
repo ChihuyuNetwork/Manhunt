@@ -11,8 +11,8 @@ object CompassUtil {
 
         player.inventory.filterNotNull().filter { it.type == Material.COMPASS}.forEach { item ->
             val meta = item.itemMeta as CompassMeta
-            meta.isLodestoneTracked = false
             meta.lodestone = target.location
+            meta.isLodestoneTracked = false
             item.itemMeta = meta
         }
     }

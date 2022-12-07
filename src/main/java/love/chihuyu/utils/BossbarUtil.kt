@@ -15,7 +15,7 @@ object BossbarUtil {
             val key = NamespacedKey(plugin, "manhunt-${it.uniqueId}")
             val bossbar = Bukkit.getBossBar(key) ?: Bukkit.createBossBar(key, "残り時間", BarColor.RED, BarStyle.SOLID)
             val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
-            val msg = if (it in GameManager.hunters()) "マンを全員殺せ" else mission.msg
+            val msg = if (it in GameManager.hunters()) "ランナーを全員殺せ" else mission.msg
 
             bossbar.setTitle("$msg ≫ ${EpochUtil.formatTime(remains)}")
             bossbar.isVisible = true

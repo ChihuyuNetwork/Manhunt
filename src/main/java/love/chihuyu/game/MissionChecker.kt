@@ -15,16 +15,19 @@ object MissionChecker : Listener {
 
     @EventHandler
     fun aliveEscapers(e: PlayerDeathEvent) {
+        if (!started) return
         if (GameManager.runners().none { started && it.gameMode != GameMode.SPECTATOR }) GameManager.end(false)
     }
 
     @EventHandler
     fun checkPortalMission(e: PlayerPortalEvent) {
+        if (!started) return
         if (e.to.world.environment == World.Environment.THE_END && mission == ManhuntMission.ENTER_END_PORTAL) GameManager.end(true)
     }
 
     @EventHandler
     fun checkEntityKillMission(e: EntityDeathEvent) {
+        if (!started) return
         if (e.entity.type == EntityType.ENDER_DRAGON && mission == ManhuntMission.KILL_ENDER_DRAGON) GameManager.end(true)
     }
 }

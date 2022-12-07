@@ -1,5 +1,6 @@
 package love.chihuyu
 
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.GameManager.hunterTeamName
@@ -29,6 +30,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.scoreboard.DisplaySlot
+import org.bukkit.scoreboard.Objective
 
 class Plugin : JavaPlugin(), Listener {
 
@@ -71,8 +74,12 @@ class Plugin : JavaPlugin(), Listener {
 
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
+        val player = e.entity
+
         e.drops.removeIf { it.itemMeta.hasCustomModelData() }
-        if (e.entity in runners()) e.entity.gameMode = GameMode.SPECTATOR
+        if (player in runners()) player.gameMode = GameMode.SPECTATOR
+
+        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }
 
     @EventHandler
@@ -122,10 +129,24 @@ class Plugin : JavaPlugin(), Listener {
 
         e.recipients.removeIf { !isTeam && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
 
-        if (!isTeam) {
-            e.message = e.message.substringAfter('!')
-        }
+        if (!isTeam) e.message = e.message.substringAfter('!')
         e.format = "$teamPrefix ${player.name}: ${e.message}"
+    }
+
+    @EventHandler
+    fun onGamemode(e: PlayerGameModeChangeEvent) {
+        val player = e.player
+        val mode = e.newGameMode
+        val healthBarBoard = player.scoreboard
+        val obj = healthBarBoard.getObjective("health") ?: healthBarBoard.registerNewObjective("health", "health", Component.text("${ChatColor.RED}♥"))
+
+        if (mode == GameMode.SPECTATOR) {
+            obj.displaySlot = DisplaySlot.BELOW_NAME
+        } else {
+            healthBarBoard.objectives.forEach(Objective::unregister)
+        }
+
+        player.scoreboard = healthBarBoard
     }
 
     @EventHandler
@@ -156,6 +177,11 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onDrop(e: PlayerDropItemEvent) {
         e.isCancelled = !started && e.player.gameMode != GameMode.CREATIVE
+    }
+
+    @EventHandler
+    fun onAchievement(e: PlayerAdvancementCriterionGrantEvent) {
+        e.isCancelled = e.player.gameMode == GameMode.SPECTATOR
     }
 
     @EventHandler

@@ -9,7 +9,7 @@ import net.kyori.adventure.title.Title
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Sound
-import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
@@ -20,8 +20,8 @@ import kotlin.math.ceil
 
 object GameManager {
 
-    private const val hunterTeamName = "hunter"
-    private const val runnerTeamName = "runner"
+    const val hunterTeamName = "hunter"
+    const val runnerTeamName = "runner"
     val board = plugin.server.scoreboardManager.mainScoreboard
 
     fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == hunterTeamName }.toSet()
@@ -41,7 +41,7 @@ object GameManager {
         val hunterTeam = board.registerNewTeam(hunterTeamName)
         val runnerTeam = board.registerNewTeam(runnerTeamName)
 
-        hunterTeam.color(NamedTextColor.GOLD)
+        hunterTeam.color(NamedTextColor.WHITE)
         runnerTeam.color(NamedTextColor.RED)
 
         hunters().forEach { hunterTeam.removePlayer(it) }
@@ -56,8 +56,16 @@ object GameManager {
         }
     }
 
-    internal fun prepare(sender: CommandSender, mission: ManhuntMission) {
+    internal fun prepare(sender: Player, mission: ManhuntMission) {
         GameManager.mission = mission
+
+        plugin.server.worlds.forEach {
+            it.time = 1000
+        }
+
+        plugin.server.onlinePlayers.forEach {
+            it.teleport(sender)
+        }
 
         var error = ""
         when {
@@ -65,12 +73,14 @@ object GameManager {
                 grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
                 error = "ハンターもしくはランナーのチームが空だっただめ、再割り振りしました"
             }
+
             plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null } -> {
                 plugin.server.onlinePlayers.filter { board.getPlayerTeam(it) == null }.forEach {
                     board.getTeam(hunterTeamName)?.addPlayer(it)
                 }
                 error = "ハンターもしくはランナーのチームに所属していないプレイヤーがいたため、ハンターに割り振りました"
             }
+
             board.getTeam(hunterTeamName) == null || board.getTeam(runnerTeamName) == null -> {
                 grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
                 error = "ハンターもしくはランナーのチームがなかったため、再割り振りしました"
@@ -80,6 +90,7 @@ object GameManager {
         if (error.isNotEmpty()) sender.sendMessage("$prefix $error")
 
         var remainCountdown = 5
+
         val countdown = plugin.runTaskTimer(0, 20) {
             plugin.server.onlinePlayers.forEach {
                 it.showTitle(
@@ -96,17 +107,8 @@ object GameManager {
                     )
                 )
 
+                it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
                 it.playSound(it.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-
-                it.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, 60 * 20, 254, false, false))
-                it.addPotionEffect(PotionEffect(PotionEffectType.REGENERATION, 60 * 20, 254, false, false))
-            }
-
-            hunters().forEach {
-                it.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 60 * 20, 254, false, false))
-                it.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, 60 * 20, 254, false, false))
-                it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 60 * 20, 254, false, false))
-                it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 60 * 20, 136, false, false))
             }
 
             remainCountdown--
@@ -146,6 +148,13 @@ object GameManager {
 
         taskTickEnd = plugin.runTaskLater((endEpoch - startEpoch) * 20L) {
             end(false)
+        }
+
+        hunters().forEach {
+            it.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 30 * 20, 254, false, false))
+            it.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, 30 * 20, 254, false, false))
+            it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 30 * 20, 254, false, false))
+            it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 30 * 20, 136, false, false))
         }
 
         plugin.server.onlinePlayers.forEach {

@@ -6,10 +6,11 @@ import love.chihuyu.game.GameManager
 import love.chihuyu.game.ManhuntMission
 import net.kyori.adventure.text.Component
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
 object CommandManhunt: Command("manhunt") {
     override fun onCommand(sender: CommandSender, label: String, args: Array<out String>) {
-        if (args.isEmpty() || !sender.isOp) return
+        if (args.isEmpty() || !sender.isOp || sender !is Player) return
 
         when (args[0]) {
             "group" -> {
