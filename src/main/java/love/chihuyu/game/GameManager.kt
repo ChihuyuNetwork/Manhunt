@@ -143,7 +143,7 @@ object GameManager {
         endEpoch = Instant.now().plus(Duration.ofHours(mission.hour)).epochSecond
 
         taskTickGame = plugin.runTaskTimer(0, 20) {
-            BossbarUtil.updateBossbar()
+            BossbarUtil.updateBossbar(mission)
         }
 
         taskTickEnd = plugin.runTaskLater((endEpoch - startEpoch) * 20L) {

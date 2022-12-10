@@ -80,11 +80,15 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     @EventHandler
-    fun onDamage(e: EntityDamageByEntityEvent) {
-        e.isCancelled = !started
-                && e.damager is Player
+    fun onDamage(e: EntityDamageEvent) {
+        e.isCancelled =
+            !started
+            && if (e is EntityDamageByEntityEvent)
+                e.damager is Player
                 && (e.damager as? Player)?.gameMode != GameMode.CREATIVE
                 && (e.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK || e.cause != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
+            else
+                true
     }
 
     @EventHandler
@@ -137,7 +141,7 @@ class Plugin : JavaPlugin(), Listener {
     fun onGamemode(e: PlayerGameModeChangeEvent) {
         val player = e.player
         val mode = e.newGameMode
-        val healthBarBoard = player.scoreboard
+        val healthBarBoard = server.scoreboardManager.newScoreboard
         val obj = healthBarBoard.getObjective("health") ?: healthBarBoard.registerNewObjective("health", "health", Component.text("${ChatColor.RED}♥"))
 
         if (mode == GameMode.SPECTATOR) {
