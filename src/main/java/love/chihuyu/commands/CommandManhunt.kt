@@ -17,7 +17,7 @@ object CommandManhunt: Command("manhunt") {
                 if (args.size < 2) return
                 GameManager.grouping(Integer.parseInt(args[1]))
 
-                sender.sendMessage("${Plugin.prefix} マンとハンターをグルーピングしました")
+                sender.sendMessage("${Plugin.prefix} ランナーとハンターをグルーピングしました")
             }
             "start" -> {
                 if (args.size < 2) return

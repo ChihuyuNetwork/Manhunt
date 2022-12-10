@@ -21,10 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockDamageEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
-import org.bukkit.event.entity.FoodLevelChangeEvent
-import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
@@ -76,15 +73,18 @@ class Plugin : JavaPlugin(), Listener {
     fun onDeath(e: PlayerDeathEvent) {
         val player = e.entity
 
-        e.drops.removeIf { it.itemMeta.hasCustomModelData() }
+        e.drops.removeIf { it.type == Material.COMPASS }
         if (player in runners()) player.gameMode = GameMode.SPECTATOR
 
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }
 
     @EventHandler
-    fun onDamage(e: EntityDamageEvent) {
+    fun onDamage(e: EntityDamageByEntityEvent) {
         e.isCancelled = !started
+                && e.damager is Player
+                && (e.damager as? Player)?.gameMode != GameMode.CREATIVE
+                && (e.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK || e.cause != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
     }
 
     @EventHandler
