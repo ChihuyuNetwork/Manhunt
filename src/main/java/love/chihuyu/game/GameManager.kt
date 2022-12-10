@@ -107,7 +107,6 @@ object GameManager {
                     )
                 )
 
-                it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
                 it.playSound(it.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
             }
 
@@ -129,6 +128,7 @@ object GameManager {
                 )
 
                 it.gameMode = GameMode.ADVENTURE
+                it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
                 it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
             }
 

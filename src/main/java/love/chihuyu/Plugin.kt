@@ -99,6 +99,8 @@ class Plugin : JavaPlugin(), Listener {
             GameManager.board.getTeam(hunterTeamName)?.addPlayer(player)
         }
 
+        player.scoreboard = GameManager.board
+
         player.gameMode = if (started) {
             if (player.gameMode == GameMode.SPECTATOR) {
                 GameMode.SPECTATOR
@@ -139,18 +141,14 @@ class Plugin : JavaPlugin(), Listener {
 
     @EventHandler
     fun onGamemode(e: PlayerGameModeChangeEvent) {
-        val player = e.player
         val mode = e.newGameMode
-        val healthBarBoard = server.scoreboardManager.newScoreboard
-        val obj = healthBarBoard.getObjective("health") ?: healthBarBoard.registerNewObjective("health", "health", Component.text("${ChatColor.RED}♥"))
+        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", "health", Component.text("${ChatColor.RED}♥"))
 
         if (mode == GameMode.SPECTATOR) {
             obj.displaySlot = DisplaySlot.BELOW_NAME
         } else {
-            healthBarBoard.objectives.forEach(Objective::unregister)
+            GameManager.board.objectives.forEach(Objective::unregister)
         }
-
-        player.scoreboard = healthBarBoard
     }
 
     @EventHandler
