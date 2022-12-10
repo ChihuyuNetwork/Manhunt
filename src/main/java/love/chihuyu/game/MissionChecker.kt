@@ -21,8 +21,9 @@ object MissionChecker : Listener {
 
     @EventHandler
     fun checkPortalMission(e: PlayerPortalEvent) {
+        val player = e.player
         if (!started) return
-        if (e.to.world.environment == World.Environment.THE_END && mission == ManhuntMission.ENTER_END_PORTAL) GameManager.end(true)
+        if (e.to.world.environment == World.Environment.THE_END && mission == ManhuntMission.ENTER_END_PORTAL && player in GameManager.runners()) GameManager.end(true)
     }
 
     @EventHandler
