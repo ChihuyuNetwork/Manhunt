@@ -84,9 +84,10 @@ class Plugin : JavaPlugin(), Listener {
         e.isCancelled =
             !started
             && if (e is EntityDamageByEntityEvent)
-                e.damager is Player
-                && (e.damager as? Player)?.gameMode != GameMode.CREATIVE
-                && (e.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK || e.cause != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
+                if (e.damager is Player)
+                    (e.damager as Player).gameMode != GameMode.CREATIVE
+                else
+                    true
             else
                 true
     }
