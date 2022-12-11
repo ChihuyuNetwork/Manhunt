@@ -95,7 +95,7 @@ class Plugin : JavaPlugin(), Listener {
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.player
 
-        if (player !in hunters() || player !in runners()) {
+        if (player !in hunters() && player !in runners()) {
             GameManager.board.getTeam(hunterTeamName)?.addPlayer(player)
         }
 
