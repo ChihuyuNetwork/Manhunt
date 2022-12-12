@@ -101,7 +101,7 @@ object GameManager {
                             )
                         ),
                         Component.empty(),
-                        Title.Times.of(
+                        Title.Times.times(
                             Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(0)
                         )
                     )
@@ -121,7 +121,7 @@ object GameManager {
                     Title.title(
                         Component.text("${ChatColor.GREEN}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームスタート！"),
                         Component.text(mission.msg),
-                        Title.Times.of(
+                        Title.Times.times(
                             Duration.ofSeconds(1), Duration.ofSeconds(7), Duration.ofSeconds(1)
                         )
                     )
@@ -174,13 +174,11 @@ object GameManager {
                 Title.title(
                     Component.text("${ChatColor.RED}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームオーバー！"),
                     Component.text(if (missioned) "ランナーの勝ち" else "ハンターの勝ち"),
-                    Title.Times.of(
+                    Title.Times.times(
                         Duration.ofSeconds(1), Duration.ofSeconds(5), Duration.ofSeconds(1)
                     )
                 )
             )
-
-            it.gameMode = GameMode.ADVENTURE
         }
     }
 }
