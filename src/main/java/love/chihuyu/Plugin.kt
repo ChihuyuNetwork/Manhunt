@@ -119,8 +119,8 @@ class Plugin : JavaPlugin(), Listener {
             return
         }
 
-        val isTeam = !e.message.startsWith('!')
-        val teamColor = if (isTeam) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
+        val isGlobal = e.message.startsWith('!')
+        val teamColor = if (isGlobal) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
         val teamPrefix =
             when (player) {
                 in hunters() -> "$teamColor[H]${ChatColor.RESET}"
@@ -128,9 +128,9 @@ class Plugin : JavaPlugin(), Listener {
                 else -> "$teamColor[N]${ChatColor.RESET}"
             }
 
-        e.recipients.removeIf { !isTeam && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
+        e.recipients.removeIf { !isGlobal && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
 
-        if (!isTeam) e.message = e.message.substringAfter('!')
+        if (isGlobal) e.message = e.message.substringAfter('!')
         e.format = "$teamPrefix ${player.name}: ${e.message}"
     }
 
