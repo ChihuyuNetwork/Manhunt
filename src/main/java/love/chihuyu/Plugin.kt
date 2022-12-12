@@ -13,15 +13,13 @@ import love.chihuyu.utils.ItemUtil
 import love.chihuyu.utils.runTaskLater
 import love.chihuyu.utils.runTaskTimer
 import net.kyori.adventure.text.Component
-import org.bukkit.ChatColor
-import org.bukkit.GameMode
-import org.bukkit.Material
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockDamageEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.*
@@ -62,6 +60,13 @@ class Plugin : JavaPlugin(), Listener {
 
     override fun onDisable() {
         compassTask.cancel()
+    }
+
+    @EventHandler
+    fun onMine(e: BlockBreakEvent) {
+        logger.info(e.expToDrop.toString())
+        e.expToDrop *= 4
+        logger.info(e.expToDrop.toString())
     }
 
     @EventHandler
@@ -195,6 +200,30 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     @EventHandler
+    fun logToPlanks(e: PlayerInteractEvent) {
+        val player = e.player
+        val action = e.action
+        val item = e.item ?: return
+        if (action != Action.RIGHT_CLICK_AIR) return
+        if (item.type !in listOf(
+                Material.OAK_LOG,
+                Material.DARK_OAK_LOG,
+                Material.JUNGLE_LOG,
+                Material.ACACIA_LOG,
+                Material.MANGROVE_LOG,
+                Material.BIRCH_LOG,
+                Material.SPRUCE_LOG,
+            )) return
+
+        val amount = player.inventory.itemInMainHand.amount
+        player.inventory.itemInMainHand.amount = 0
+        player.inventory.addItem(ItemUtil.create(Material.OAK_PLANKS, amount = amount * 4)).forEach { (amount, itemStack) ->
+            player.world.dropItemNaturally(player.location, ItemUtil.create(itemStack.type, amount = amount))
+        }
+        player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
+    }
+
+    @EventHandler
     fun compassTracker(e: PlayerInteractEvent) {
         val player = e.player
         val action = e.action
@@ -205,7 +234,7 @@ class Plugin : JavaPlugin(), Listener {
         val nextPlayer = try {
             val other = plugin.server.onlinePlayers.toList().minus(player)
             other[other.indexOf(compassTargets[player]).inc() % other.size]
-        } catch (e: NoSuchElementException) {
+        } catch (e: Exception) {
             return
         }
         compassTargets[player] = nextPlayer
