@@ -1,7 +1,7 @@
 package love.chihuyu
 
-import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 import love.chihuyu.commands.CommandManhunt
+import love.chihuyu.game.EventCanceller
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.GameManager.hunterTeamName
 import love.chihuyu.game.GameManager.hunters
@@ -13,15 +13,16 @@ import love.chihuyu.utils.ItemUtil
 import love.chihuyu.utils.runTaskLater
 import love.chihuyu.utils.runTaskTimer
 import net.kyori.adventure.text.Component
-import org.bukkit.*
-import org.bukkit.entity.Monster
+import org.bukkit.ChatColor
+import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockDamageEvent
-import org.bukkit.event.entity.*
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
@@ -47,6 +48,7 @@ class Plugin : JavaPlugin(), Listener {
     override fun onEnable() {
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
+        server.pluginManager.registerEvents(EventCanceller, this)
 
         compassTask = runTaskTimer(0, 0) {
             server.onlinePlayers.forEach {
@@ -64,9 +66,7 @@ class Plugin : JavaPlugin(), Listener {
 
     @EventHandler
     fun onMine(e: BlockBreakEvent) {
-        logger.info(e.expToDrop.toString())
         e.expToDrop *= 4
-        logger.info(e.expToDrop.toString())
     }
 
     @EventHandler
@@ -84,19 +84,6 @@ class Plugin : JavaPlugin(), Listener {
         if (player in runners()) player.gameMode = GameMode.SPECTATOR
 
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
-    }
-
-    @EventHandler
-    fun onDamage(e: EntityDamageEvent) {
-        e.isCancelled =
-            !started
-            && if (e is EntityDamageByEntityEvent)
-                if (e.damager is Player)
-                    (e.damager as Player).gameMode != GameMode.CREATIVE
-                else
-                    true
-            else
-                true
     }
 
     @EventHandler
@@ -157,46 +144,6 @@ class Plugin : JavaPlugin(), Listener {
         } else {
             GameManager.board.objectives.forEach(Objective::unregister)
         }
-    }
-
-    @EventHandler
-    fun onSpawn(e: CreatureSpawnEvent) {
-        if (e.location.world.environment == World.Environment.NORMAL && e.entity is Monster) e.isCancelled = true
-    }
-
-    @EventHandler
-    fun onInteract(e: PlayerInteractEvent) {
-        e.isCancelled = !started && e.player.gameMode != GameMode.CREATIVE
-    }
-
-    @EventHandler
-    fun onEntityInteract(e: PlayerInteractEntityEvent) {
-        e.isCancelled = !started && e.player.gameMode != GameMode.CREATIVE
-    }
-
-    @EventHandler
-    fun onBlockDamage(e: BlockDamageEvent) {
-        e.isCancelled = !started && e.player.gameMode != GameMode.CREATIVE
-    }
-
-    @EventHandler
-    fun onPick(e: EntityPickupItemEvent) {
-        e.isCancelled = !started && (e.entity as? Player ?: return).gameMode != GameMode.CREATIVE
-    }
-
-    @EventHandler
-    fun onHunger(e: FoodLevelChangeEvent) {
-        e.isCancelled = !started
-    }
-
-    @EventHandler
-    fun onDrop(e: PlayerDropItemEvent) {
-        e.isCancelled = !started && e.player.gameMode != GameMode.CREATIVE
-    }
-
-    @EventHandler
-    fun onAchievement(e: PlayerAdvancementCriterionGrantEvent) {
-        e.isCancelled = e.player.gameMode == GameMode.SPECTATOR
     }
 
     @EventHandler
