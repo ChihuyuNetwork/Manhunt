@@ -73,6 +73,7 @@ class Plugin : JavaPlugin(), Listener {
     fun onRespawn(e: PlayerRespawnEvent) {
         val player = e.player
         ItemUtil.giveCompassIfNone(player)
+        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
         if (player.gameMode == GameMode.SPECTATOR) player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }
 
@@ -107,6 +108,7 @@ class Plugin : JavaPlugin(), Listener {
         }
 
         ItemUtil.giveCompassIfNone(player)
+        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }
 
     @EventHandler
