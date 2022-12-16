@@ -74,7 +74,6 @@ class Plugin : JavaPlugin(), Listener {
         val player = e.player
         ItemUtil.giveCompassIfNone(player)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
-        if (player.gameMode == GameMode.SPECTATOR) player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }
 
     @EventHandler
@@ -116,7 +115,6 @@ class Plugin : JavaPlugin(), Listener {
         val player = e.player
 
         if (player.gameMode == GameMode.SPECTATOR) {
-            e.recipients.removeIf { it.gameMode != GameMode.SPECTATOR }
             e.format = "${ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
             return
         }
