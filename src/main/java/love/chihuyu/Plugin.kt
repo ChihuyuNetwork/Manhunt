@@ -1,5 +1,7 @@
 package love.chihuyu
 
+import com.comphenix.protocol.ProtocolLibrary
+import com.comphenix.protocol.ProtocolManager
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.game.EventCanceller
 import love.chihuyu.game.GameManager
@@ -22,19 +24,21 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
-import org.bukkit.scoreboard.Objective
 
 class Plugin : JavaPlugin(), Listener {
 
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var compassTask: BukkitTask
+        lateinit var protocolManager: ProtocolManager
         var cooltimed = mutableSetOf<Player>()
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
         val compassTargets = mutableMapOf<Player, Player>()
@@ -45,6 +49,8 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     override fun onEnable() {
+        protocolManager = ProtocolLibrary.getProtocolManager()
+
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
         server.pluginManager.registerEvents(EventCanceller, this)
@@ -116,6 +122,9 @@ class Plugin : JavaPlugin(), Listener {
             GameManager.board.getTeam(hunterTeamName)?.addPlayer(player)
         }
 
+        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", Criteria.HEALTH, Component.text("${ChatColor.RED}♥"))
+        obj.displaySlot = DisplaySlot.BELOW_NAME
+
         player.scoreboard = GameManager.board
 
         player.gameMode =
@@ -127,6 +136,11 @@ class Plugin : JavaPlugin(), Listener {
 
         ItemUtil.giveCompassIfNone(player)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+    }
+
+    @EventHandler
+    fun onHit(e: ProjectileHitEvent) {
+        if (e.hitEntity is Player) (e.hitEntity as Player).damage(0.1)
     }
 
     @EventHandler
@@ -143,7 +157,7 @@ class Plugin : JavaPlugin(), Listener {
         val teamPrefix =
             when (player) {
                 in hunters() -> "$teamColor[H]${ChatColor.RESET}"
-                in runners() -> "$teamColor[E]${ChatColor.RESET}"
+                in runners() -> "$teamColor[R]${ChatColor.RESET}"
                 else -> "$teamColor[N]${ChatColor.RESET}"
             }
 
@@ -151,18 +165,6 @@ class Plugin : JavaPlugin(), Listener {
 
         if (isGlobal) e.message = e.message.substringAfter('!')
         e.format = "$teamPrefix ${player.name}: ${e.message}"
-    }
-
-    @EventHandler
-    fun onGamemode(e: PlayerGameModeChangeEvent) {
-        val mode = e.newGameMode
-        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", "health", Component.text("${ChatColor.RED}♥"))
-
-        if (mode == GameMode.SPECTATOR) {
-            obj.displaySlot = DisplaySlot.BELOW_NAME
-        } else {
-            GameManager.board.objectives.forEach(Objective::unregister)
-        }
     }
 
     @EventHandler
