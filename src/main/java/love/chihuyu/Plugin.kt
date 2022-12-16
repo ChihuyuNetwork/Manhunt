@@ -6,7 +6,6 @@ import love.chihuyu.game.GameManager
 import love.chihuyu.game.GameManager.hunterTeamName
 import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.runners
-import love.chihuyu.game.GameManager.started
 import love.chihuyu.game.MissionChecker
 import love.chihuyu.utils.CompassUtil
 import love.chihuyu.utils.ItemUtil
@@ -92,8 +91,11 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onRespawn(e: PlayerRespawnEvent) {
         val player = e.player
-        ItemUtil.giveCompassIfNone(player)
-        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+
+        plugin.runTaskLater(1) {
+            ItemUtil.giveCompassIfNone(player)
+            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+        }
     }
 
     @EventHandler
@@ -116,15 +118,12 @@ class Plugin : JavaPlugin(), Listener {
 
         player.scoreboard = GameManager.board
 
-        player.gameMode = if (started) {
+        player.gameMode =
             if (player.gameMode == GameMode.SPECTATOR) {
                 GameMode.SPECTATOR
             } else {
                 GameMode.SURVIVAL
             }
-        } else {
-            GameMode.ADVENTURE
-        }
 
         ItemUtil.giveCompassIfNone(player)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))

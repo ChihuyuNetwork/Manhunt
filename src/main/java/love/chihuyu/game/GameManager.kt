@@ -115,29 +115,30 @@ object GameManager {
 
         plugin.runTaskLater(5 * 20) {
             countdown.cancel()
-
-            plugin.server.onlinePlayers.forEach {
-                it.showTitle(
-                    Title.title(
-                        Component.text("${ChatColor.GREEN}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームスタート！"),
-                        Component.text(mission.msg),
-                        Title.Times.times(
-                            Duration.ofSeconds(1), Duration.ofSeconds(7), Duration.ofSeconds(1)
-                        )
-                    )
-                )
-
-                it.gameMode = GameMode.ADVENTURE
-                it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
-                it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
-            }
-
             start(mission)
         }
     }
 
     private fun start(mission: ManhuntMission) {
         started = true
+
+        plugin.server.onlinePlayers.forEach {
+            it.showTitle(
+                Title.title(
+                    Component.text("${ChatColor.GREEN}${ChatColor.BOLD}${ChatColor.ITALIC}ゲームスタート！"),
+                    Component.text(mission.msg),
+                    Title.Times.times(
+                        Duration.ofSeconds(1), Duration.ofSeconds(7), Duration.ofSeconds(1)
+                    )
+                )
+            )
+
+            it.inventory.clear()
+            it.gameMode = GameMode.SURVIVAL
+            it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+            it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
+            ItemUtil.giveCompassIfNone(it)
+        }
 
         startEpoch = EpochUtil.nowEpoch()
         endEpoch = Instant.now().plus(Duration.ofHours(mission.hour)).epochSecond
@@ -155,11 +156,6 @@ object GameManager {
             it.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, 30 * 20, 254, false, false))
             it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 30 * 20, 254, false, false))
             it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 30 * 20, 136, false, false))
-        }
-
-        plugin.server.onlinePlayers.forEach {
-            it.gameMode = GameMode.SURVIVAL
-            ItemUtil.giveCompassIfNone(it)
         }
     }
 
