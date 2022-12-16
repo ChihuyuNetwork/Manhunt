@@ -20,20 +20,24 @@ object CommandManhunt: Command("manhunt") {
                 sender.sendMessage("${Plugin.prefix} ランナーとハンターをグルーピングしました")
             }
             "start" -> {
-                if (args.size < 2) return
+                if (args.size < 2 || GameManager.started) return
                 val rule = ManhuntMission.valueOf(args[1])
                 GameManager.prepare(sender, rule)
 
                 plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
+            }
+            "end" -> {
+                if (!GameManager.started) return
+                GameManager.end(false)
+                plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが終了されました"))
             }
         }
     }
 
     override fun onTabComplete(sender: CommandSender, label: String, args: Array<out String>): List<String> {
         return when (args.size) {
-            1 -> listOf("group", "start")
+            1 -> listOf("group", "start", "end")
             2 -> when (args[0]) {
-                "group" -> listOf()
                 "start" -> ManhuntMission.values().map { it.name }
                 else -> listOf()
             }
