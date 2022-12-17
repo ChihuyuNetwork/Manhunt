@@ -11,10 +11,6 @@ version = ''
 repositories {
     mavenCentral()
     maven { url = 'https://repo.purpurmc.org/snapshots' }
-    maven {
-        name = 'sonatype'
-        url = 'https://oss.sonatype.org/content/groups/public/'
-    }
 }
 
 dependencies {
