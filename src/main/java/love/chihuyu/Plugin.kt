@@ -95,7 +95,7 @@ class Plugin : JavaPlugin(), Listener {
 
         plugin.runTaskLater(1) {
             ItemUtil.giveCompassIfNone(player)
-            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
         }
     }
 
@@ -106,7 +106,7 @@ class Plugin : JavaPlugin(), Listener {
         e.drops.removeIf { it.type == Material.COMPASS }
         if (player in runners()) player.gameMode = GameMode.SPECTATOR
 
-        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
 
     @EventHandler

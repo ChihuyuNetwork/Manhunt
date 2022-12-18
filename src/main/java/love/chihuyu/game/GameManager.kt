@@ -135,7 +135,7 @@ object GameManager {
 
             it.inventory.clear()
             it.gameMode = GameMode.SURVIVAL
-            it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+            it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
             it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
             ItemUtil.giveCompassIfNone(it)
         }
