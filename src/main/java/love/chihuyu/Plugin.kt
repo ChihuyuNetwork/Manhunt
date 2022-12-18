@@ -1,7 +1,5 @@
 package love.chihuyu
 
-import com.comphenix.protocol.ProtocolLibrary
-import com.comphenix.protocol.ProtocolManager
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.game.EventCanceller
 import love.chihuyu.game.GameManager
@@ -38,7 +36,6 @@ class Plugin : JavaPlugin(), Listener {
     companion object {
         lateinit var plugin: JavaPlugin
         lateinit var compassTask: BukkitTask
-        lateinit var protocolManager: ProtocolManager
         var cooltimed = mutableSetOf<Player>()
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
         val compassTargets = mutableMapOf<Player, Player>()
@@ -49,8 +46,6 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     override fun onEnable() {
-        protocolManager = ProtocolLibrary.getProtocolManager()
-
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
         server.pluginManager.registerEvents(EventCanceller, this)

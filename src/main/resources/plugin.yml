@@ -2,7 +2,6 @@ name: Manhunt
 version: '1.0.0'
 main: love.chihuyu.Plugin
 authors: [ Hirosuke ]
-depend: [ ProtocolLib ]
 api-version: 1.19
 commands:
   manhunt:
