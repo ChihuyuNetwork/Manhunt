@@ -1,12 +1,15 @@
 package love.chihuyu
 
 import love.chihuyu.commands.CommandManhunt
+import love.chihuyu.database.Hunters
+import love.chihuyu.database.Runners
 import love.chihuyu.game.EventCanceller
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.GameManager.hunterTeamName
 import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.runners
 import love.chihuyu.game.MissionChecker
+import love.chihuyu.game.StatisticsCollector
 import love.chihuyu.utils.CompassUtil
 import love.chihuyu.utils.ItemUtil
 import love.chihuyu.utils.runTaskLater
@@ -17,6 +20,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
+import org.bukkit.entity.Snowball
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -30,6 +34,12 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 
 class Plugin : JavaPlugin(), Listener {
 
@@ -39,6 +49,7 @@ class Plugin : JavaPlugin(), Listener {
         var cooltimed = mutableSetOf<Player>()
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
         val compassTargets = mutableMapOf<Player, Player>()
+        val dbFile = File("${plugin.dataFolder}/statistics.db")
     }
 
     init {
@@ -49,12 +60,25 @@ class Plugin : JavaPlugin(), Listener {
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
         server.pluginManager.registerEvents(EventCanceller, this)
+        server.pluginManager.registerEvents(StatisticsCollector, this)
 
         compassTask = runTaskTimer(0, 0) {
             server.onlinePlayers.forEach {
                 val target = compassTargets[it]
                 it.sendActionBar(Component.text("${ChatColor.WHITE}追跡中 ≫ " + target?.name))
             }
+        }
+
+        if (!dbFile.exists()) {
+            File("${plugin.dataFolder}").mkdir()
+            dbFile.createNewFile()
+        }
+
+        Database.connect("jdbc:sqlite:${plugin.dataFolder}/statistics.db", "org.sqlite.JDBC")
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.createMissingTablesAndColumns(Hunters, withLogs = true)
+            SchemaUtils.createMissingTablesAndColumns(Runners, withLogs = true)
         }
 
         CommandManhunt.register()
@@ -135,7 +159,7 @@ class Plugin : JavaPlugin(), Listener {
 
     @EventHandler
     fun onHit(e: ProjectileHitEvent) {
-        if (e.hitEntity is Player) (e.hitEntity as Player).damage(0.1)
+        if (e.hitEntity is Player && e.entity is Snowball) (e.hitEntity as Player).damage(0.1)
     }
 
     @EventHandler

@@ -2,13 +2,14 @@ package love.chihuyu.game
 
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 import org.bukkit.GameMode
-import org.bukkit.World
-import org.bukkit.entity.Monster
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockDamageEvent
-import org.bukkit.event.entity.*
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
+import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -28,10 +29,10 @@ object EventCanceller: Listener {
                 true
     }
 
-    @EventHandler
-    fun onSpawn(e: CreatureSpawnEvent) {
-        e.isCancelled = e.location.world.environment == World.Environment.NORMAL && e.entity is Monster
-    }
+//    @EventHandler
+//    fun onSpawn(e: CreatureSpawnEvent) {
+//        e.isCancelled = e.location.world.environment == World.Environment.NORMAL && e.entity is Monster
+//    }
 
     @EventHandler
     fun onInteract(e: PlayerInteractEvent) {

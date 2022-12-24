@@ -16,6 +16,8 @@ import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Team
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import kotlin.math.ceil
 
 object GameManager {
@@ -157,6 +159,12 @@ object GameManager {
             it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 30 * 20, 254, false, false))
             it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 30 * 20, 136, false, false))
         }
+
+        StatisticsCollector.onGameStart(
+            runners().toList(),
+            hunters().toList(),
+            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo"))
+        )
     }
 
     internal fun end(missioned: Boolean) {
@@ -176,5 +184,18 @@ object GameManager {
                 )
             )
         }
+
+        StatisticsCollector.onGameEnd(
+            runners().toList(),
+            hunters().toList(),
+            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo")),
+            missioned
+        )
+        StatisticsCollector.collect(
+            runners().toList(),
+            hunters().toList(),
+            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo"))
+        )
+        StatisticsCollector.clear()
     }
 }
