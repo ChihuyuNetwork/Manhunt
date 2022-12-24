@@ -2,5 +2,6 @@ package love.chihuyu.game
 
 enum class ManhuntMission(val hour: Long, val msg: String) {
     ENTER_END_PORTAL(2, "エンドポータルに入れ"),
-    KILL_ENDER_DRAGON(3, "エンダードラゴンを殺せ")
+    KILL_ENDER_DRAGON(3, "エンダードラゴンを殺せ"),
+    SUMMON_WITHER(2, "ウィザーを召喚しろ")
 }

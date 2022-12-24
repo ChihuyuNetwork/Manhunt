@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerPortalEvent
 
@@ -30,5 +31,11 @@ object MissionChecker : Listener {
     fun checkEntityKillMission(e: EntityDeathEvent) {
         if (!started) return
         if (e.entity.type == EntityType.ENDER_DRAGON && mission == ManhuntMission.KILL_ENDER_DRAGON) GameManager.end(true)
+    }
+
+    @EventHandler
+    fun checkWitherSummon(e: EntitySpawnEvent) {
+        if (!started) return
+        if (e.entity.type == EntityType.WITHER && mission == ManhuntMission.SUMMON_WITHER) GameManager.end(true)
     }
 }
