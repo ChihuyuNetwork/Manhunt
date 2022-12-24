@@ -14,13 +14,13 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
-object EventCanceller: Listener {
+object EventCanceller : Listener {
 
     @EventHandler
     fun onDamage(e: EntityDamageEvent) {
         e.isCancelled =
-            !GameManager.started
-                    && if (e is EntityDamageByEntityEvent)
+            !GameManager.started &&
+            if (e is EntityDamageByEntityEvent)
                 if (e.damager is Player)
                     (e.damager as Player).gameMode != GameMode.CREATIVE
                 else

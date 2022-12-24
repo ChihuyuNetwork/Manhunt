@@ -26,7 +26,7 @@ import org.purpurmc.purpur.event.inventory.AnvilTakeResultEvent
 import java.time.Instant
 import java.time.LocalDateTime
 
-object StatisticsCollector: Listener {
+object StatisticsCollector : Listener {
 
     init {
         StatisticsType.values().forEach { temporaryRecord[it] = mutableMapOf() }

@@ -113,7 +113,8 @@ class Plugin : JavaPlugin(), Listener {
                 Material.DEEPSLATE_REDSTONE_ORE,
                 Material.NETHER_GOLD_ORE,
                 Material.NETHER_QUARTZ_ORE,
-        ))
+            )
+        )
             e.expToDrop += 24
     }
 
@@ -202,7 +203,8 @@ class Plugin : JavaPlugin(), Listener {
                 Material.MANGROVE_LOG,
                 Material.BIRCH_LOG,
                 Material.SPRUCE_LOG,
-            )) return
+            )
+        ) return
 
         val amount = player.inventory.itemInMainHand.amount
         player.inventory.itemInMainHand.amount = 0

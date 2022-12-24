@@ -3,7 +3,7 @@ package love.chihuyu.database
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object Hunters: IntIdTable("hunters") {
+object Hunters : IntIdTable("hunters") {
 
     val uuid = uuid("uuid")
     val date = datetime("datetime")

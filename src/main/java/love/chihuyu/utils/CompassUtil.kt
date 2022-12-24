@@ -9,7 +9,7 @@ object CompassUtil {
     fun setTargetTo(player: Player, target: Player) {
         player.compassTarget = target.location
 
-        player.inventory.filterNotNull().filter { it.type == Material.COMPASS}.forEach { item ->
+        player.inventory.filterNotNull().filter { it.type == Material.COMPASS }.forEach { item ->
             val meta = item.itemMeta as CompassMeta
             meta.lodestone = target.location
             meta.isLodestoneTracked = false
