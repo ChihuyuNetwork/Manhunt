@@ -160,11 +160,7 @@ object GameManager {
             it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 30 * 20, 136, false, false))
         }
 
-        StatisticsCollector.onGameStart(
-            runners().toList(),
-            hunters().toList(),
-            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo"))
-        )
+        StatisticsCollector.onGameStart()
     }
 
     internal fun end(missioned: Boolean) {
@@ -185,17 +181,8 @@ object GameManager {
             )
         }
 
-        StatisticsCollector.onGameEnd(
-            runners().toList(),
-            hunters().toList(),
-            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo")),
-            missioned
-        )
-        StatisticsCollector.collect(
-            runners().toList(),
-            hunters().toList(),
-            LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo"))
-        )
+        StatisticsCollector.onGameEnd(missioned)
+        StatisticsCollector.collect(LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo")))
         StatisticsCollector.clear()
     }
 }
