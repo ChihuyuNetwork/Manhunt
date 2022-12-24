@@ -1,5 +1,6 @@
 package love.chihuyu
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.database.Hunters
 import love.chihuyu.database.Runners
@@ -27,7 +28,10 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.event.player.*
+import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -114,13 +118,11 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     @EventHandler
-    fun onRespawn(e: PlayerRespawnEvent) {
+    fun onRespawn(e: PlayerPostRespawnEvent) {
         val player = e.player
 
-        plugin.runTaskLater(1) {
-            ItemUtil.giveCompassIfNone(player)
-            player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
-        }
+        ItemUtil.giveCompassIfNone(player)
+        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
 
     @EventHandler
