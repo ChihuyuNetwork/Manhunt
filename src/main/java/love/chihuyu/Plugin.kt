@@ -2,6 +2,7 @@ package love.chihuyu
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import love.chihuyu.commands.CommandManhunt
+import love.chihuyu.commands.CommandManhuntStatus
 import love.chihuyu.database.Hunters
 import love.chihuyu.database.Runners
 import love.chihuyu.game.EventCanceller
@@ -53,7 +54,6 @@ class Plugin : JavaPlugin(), Listener {
         var cooltimed = mutableSetOf<Player>()
         val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
         val compassTargets = mutableMapOf<Player, Player>()
-        val dbFile = File("${plugin.dataFolder}/statistics.db")
     }
 
     init {
@@ -61,6 +61,8 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     override fun onEnable() {
+        StatisticsCollector.clear()
+
         server.pluginManager.registerEvents(this, this)
         server.pluginManager.registerEvents(MissionChecker, this)
         server.pluginManager.registerEvents(EventCanceller, this)
@@ -73,6 +75,7 @@ class Plugin : JavaPlugin(), Listener {
             }
         }
 
+        val dbFile = File("${plugin.dataFolder}/statistics.db")
         if (!dbFile.exists()) {
             File("${plugin.dataFolder}").mkdir()
             dbFile.createNewFile()
@@ -85,7 +88,8 @@ class Plugin : JavaPlugin(), Listener {
             SchemaUtils.createMissingTablesAndColumns(Runners, withLogs = true)
         }
 
-        CommandManhunt.register()
+        CommandManhunt.main.register()
+        CommandManhuntStatus.main.register()
     }
 
     override fun onDisable() {
