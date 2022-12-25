@@ -3,15 +3,11 @@ package love.chihuyu
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.commands.CommandManhuntStatus
-import love.chihuyu.database.Hunters
-import love.chihuyu.database.Runners
-import love.chihuyu.game.EventCanceller
-import love.chihuyu.game.GameManager
-import love.chihuyu.game.GameManager.hunterTeamName
+import love.chihuyu.database.Matches
+import love.chihuyu.database.Users
+import love.chihuyu.game.*
 import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.runners
-import love.chihuyu.game.MissionChecker
-import love.chihuyu.game.StatisticsCollector
 import love.chihuyu.utils.CompassUtil
 import love.chihuyu.utils.ItemUtil
 import love.chihuyu.utils.runTaskLater
@@ -84,12 +80,13 @@ class Plugin : JavaPlugin(), Listener {
         Database.connect("jdbc:sqlite:${plugin.dataFolder}/statistics.db", "org.sqlite.JDBC")
         transaction {
             addLogger(StdOutSqlLogger)
-            SchemaUtils.createMissingTablesAndColumns(Hunters, withLogs = true)
-            SchemaUtils.createMissingTablesAndColumns(Runners, withLogs = true)
+            SchemaUtils.createMissingTablesAndColumns(Users, withLogs = true)
+            SchemaUtils.createMissingTablesAndColumns(Matches, withLogs = true)
         }
 
         CommandManhunt.main.register()
         CommandManhuntStatus.main.register()
+        CommandManhuntStatus.specifiedDate.register()
     }
 
     override fun onDisable() {
@@ -127,6 +124,7 @@ class Plugin : JavaPlugin(), Listener {
         val player = e.player
 
         ItemUtil.giveCompassIfNone(player)
+        player.teleport(player.killer?.location ?: player.bedSpawnLocation ?: player.world.spawnLocation)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
 
@@ -135,7 +133,9 @@ class Plugin : JavaPlugin(), Listener {
         val player = e.entity
 
         e.drops.removeIf { it.type == Material.COMPASS }
-        if (player in runners()) player.gameMode = GameMode.SPECTATOR
+        if (player in runners()) {
+            player.gameMode = GameMode.SPECTATOR
+        }
 
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
@@ -145,7 +145,7 @@ class Plugin : JavaPlugin(), Listener {
         val player = e.player
 
         if (player !in hunters() && player !in runners()) {
-            GameManager.board.getTeam(hunterTeamName)?.addPlayer(player)
+            GameManager.board.getTeam(Teams.HUNTER.teamName)?.addPlayer(player)
         }
 
         val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", Criteria.HEALTH, Component.text("${ChatColor.RED}♥"))
@@ -228,7 +228,7 @@ class Plugin : JavaPlugin(), Listener {
 
         val nextPlayer = try {
             val other = plugin.server.onlinePlayers.toList().minus(player)
-            other[other.indexOf(compassTargets[player]).inc() % other.size]
+            other[(other.indexOf(compassTargets[player]) + (if (player.isSneaking) -1 else 1)) % other.size]
         } catch (e: Exception) {
             return
         }

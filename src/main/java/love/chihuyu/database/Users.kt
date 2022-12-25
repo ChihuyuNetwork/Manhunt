@@ -1,22 +1,22 @@
 package love.chihuyu.database
 
+import love.chihuyu.game.Teams
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 
-object Runners : IntIdTable("runners") {
+object Users : IntIdTable("users") {
 
     val uuid = uuid("uuid")
     val date = datetime("datetime")
 
-    val huntersKilled = integer("huntersKilled")
+    val deathes = integer("deathes")
 
-    // Global
-
-    val victoried = bool("victoried")
+    val team = enumeration("team", Teams::class)
     val aliveTime = long("aliveTime")
     val timeToTheEnd = long("timeToTheEnd")
     val timeToNether = long("timeToNether")
 
+    val playersKilled = integer("playersKilled")
     val mobsKilled = integer("mobsKilled")
     val endermansKilled = integer("endermansKilled")
     val blazesKilled = integer("blazesKilled")

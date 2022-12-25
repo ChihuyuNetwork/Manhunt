@@ -2,6 +2,7 @@ package love.chihuyu.game
 
 import love.chihuyu.Plugin.Companion.plugin
 import love.chihuyu.Plugin.Companion.prefix
+import love.chihuyu.database.Matches
 import love.chihuyu.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -14,6 +15,10 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Team
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
@@ -22,12 +27,10 @@ import kotlin.math.ceil
 
 object GameManager {
 
-    const val hunterTeamName = "hunter"
-    const val runnerTeamName = "runner"
     val board = plugin.server.scoreboardManager.mainScoreboard
 
-    fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == hunterTeamName }.toSet()
-    fun runners() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == runnerTeamName }.toSet()
+    fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == Teams.HUNTER.teamName }.toSet()
+    fun runners() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == Teams.RUNNER.teamName }.toSet()
 
     var started: Boolean = false
     lateinit var taskTickGame: BukkitTask
@@ -40,8 +43,8 @@ object GameManager {
     internal fun grouping(escapers: Int) {
         board.teams.forEach(Team::unregister)
 
-        val hunterTeam = board.registerNewTeam(hunterTeamName)
-        val runnerTeam = board.registerNewTeam(runnerTeamName)
+        val hunterTeam = board.registerNewTeam(Teams.HUNTER.teamName)
+        val runnerTeam = board.registerNewTeam(Teams.RUNNER.teamName)
 
         hunterTeam.color(NamedTextColor.WHITE)
         runnerTeam.color(NamedTextColor.RED)
@@ -78,12 +81,12 @@ object GameManager {
 
             plugin.server.onlinePlayers.any { board.getPlayerTeam(it) == null } -> {
                 plugin.server.onlinePlayers.filter { board.getPlayerTeam(it) == null }.forEach {
-                    board.getTeam(hunterTeamName)?.addPlayer(it)
+                    board.getTeam(Teams.HUNTER.teamName)?.addPlayer(it)
                 }
                 error = "ハンターもしくはランナーのチームに所属していないプレイヤーがいたため、ハンターに割り振りました"
             }
 
-            board.getTeam(hunterTeamName) == null || board.getTeam(runnerTeamName) == null -> {
+            board.getTeam(Teams.HUNTER.teamName) == null || board.getTeam(Teams.RUNNER.teamName) == null -> {
                 grouping(ceil(plugin.server.onlinePlayers.size / 2.5).toInt())
                 error = "ハンターもしくはランナーのチームがなかったため、再割り振りしました"
             }
@@ -164,6 +167,7 @@ object GameManager {
     }
 
     internal fun end(missioned: Boolean) {
+        val startLocalDate = LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.UTC)
         started = false
 
         taskTickGame.cancel()
@@ -181,8 +185,17 @@ object GameManager {
             )
         }
 
+        transaction {
+            addLogger(StdOutSqlLogger)
+            Matches.insert {
+                it[date] = startLocalDate
+                it[matchTime] = endEpoch - startEpoch
+                it[winnerTeam] = if (missioned) Teams.RUNNER else Teams.HUNTER
+            }
+        }
+
         StatisticsCollector.onGameEnd(missioned)
-        StatisticsCollector.collect(LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.of("Japan/Tokyo")))
+        StatisticsCollector.collect(startLocalDate)
         StatisticsCollector.clear()
     }
 }

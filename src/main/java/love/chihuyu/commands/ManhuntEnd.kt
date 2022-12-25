@@ -8,8 +8,8 @@ import net.kyori.adventure.text.Component
 
 object ManhuntEnd {
 
-    val main = CommandAPICommand("end")
-        .executesPlayer(PlayerCommandExecutor { sender, args ->
+    val main: CommandAPICommand = CommandAPICommand("end")
+        .executesPlayer(PlayerCommandExecutor { _, _ ->
             GameManager.end(false)
             Plugin.plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが終了されました"))
         })

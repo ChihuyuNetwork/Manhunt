@@ -8,7 +8,7 @@ import love.chihuyu.game.GameManager
 
 object ManhuntGroup {
 
-    val main = CommandAPICommand("group")
+    val main: CommandAPICommand = CommandAPICommand("group")
         .withArguments(IntegerArgument("runners"))
         .executes(CommandExecutor { sender, args ->
             GameManager.grouping(args[0] as Int)
