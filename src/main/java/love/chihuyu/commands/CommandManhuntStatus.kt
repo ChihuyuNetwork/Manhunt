@@ -23,9 +23,11 @@ object CommandManhuntStatus {
         .withPermission(CommandPermission.NONE)
         .withArguments(
             OfflinePlayerArgument("player").replaceSuggestions(
-                ArgumentSuggestions.strings {
-                    transaction {
-                        Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                ArgumentSuggestions.stringsAsync {
+                    CompletableFuture.supplyAsync {
+                        transaction {
+                            Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                        }
                     }
                 }
             )
@@ -41,9 +43,11 @@ object CommandManhuntStatus {
         .withPermission(CommandPermission.NONE)
         .withArguments(
             OfflinePlayerArgument("player").replaceSuggestions(
-                ArgumentSuggestions.strings {
-                    transaction {
-                        Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                ArgumentSuggestions.stringsAsync {
+                    CompletableFuture.supplyAsync {
+                        transaction {
+                            Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                        }
                     }
                 }
             ),
