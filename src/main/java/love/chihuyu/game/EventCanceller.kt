@@ -29,11 +29,6 @@ object EventCanceller : Listener {
                 true
     }
 
-//    @EventHandler
-//    fun onSpawn(e: CreatureSpawnEvent) {
-//        e.isCancelled = e.location.world.environment == World.Environment.NORMAL && e.entity is Monster
-//    }
-
     @EventHandler
     fun onInteract(e: PlayerInteractEvent) {
         e.isCancelled = !GameManager.started && e.player.gameMode != GameMode.CREATIVE
