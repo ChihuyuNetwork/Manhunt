@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 
 object CommandManhuntStatus {
 
@@ -36,11 +37,13 @@ object CommandManhuntStatus {
             transaction {
                 Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
             }
-        }), GreedyStringArgument("date").replaceSuggestions(ArgumentSuggestions.strings(
-            transaction {
-                Users.selectAll().map { "${it[Users.date]}" }
+        }), GreedyStringArgument("date").replaceSuggestions(ArgumentSuggestions.stringsAsync {
+            CompletableFuture.supplyAsync {
+                transaction {
+                    Users.selectAll().map { "${it[Users.date]}" }.toTypedArray()
+                }
             }
-        )))
+        }))
         .executesPlayer(PlayerCommandExecutor { sender, args ->
             StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER, LocalDateTime.parse(args[1] as String))
         })

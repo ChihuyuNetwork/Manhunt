@@ -22,7 +22,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 import kotlin.math.ceil
 
 object GameManager {
@@ -162,7 +162,7 @@ object GameManager {
     }
 
     internal fun end(missioned: Boolean) {
-        val startLocalDate = LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneOffset.UTC)
+        val startLocalDate = LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneId.of("Asia/Tokyo").rules.getOffset(Instant.ofEpochSecond(startEpoch)))
         started = false
 
         taskTickGame.cancel()
