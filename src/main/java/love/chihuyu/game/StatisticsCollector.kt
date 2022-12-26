@@ -13,6 +13,7 @@ import org.bukkit.entity.Enderman
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -36,6 +37,21 @@ import java.time.LocalDateTime
 object StatisticsCollector : Listener {
     private val temporaryRecord = hashMapOf<StatisticsType, MutableMap<OfflinePlayer, Any>>()
     private val locationCache = mutableMapOf<OfflinePlayer, Location>()
+    private val travelingStatistics = listOf(
+        Statistic.WALK_ONE_CM,
+        Statistic.BOAT_ONE_CM,
+        Statistic.AVIATE_ONE_CM,
+        Statistic.CLIMB_ONE_CM,
+        Statistic.CROUCH_ONE_CM,
+        Statistic.HORSE_ONE_CM,
+        Statistic.MINECART_ONE_CM,
+        Statistic.PIG_ONE_CM,
+        Statistic.SPRINT_ONE_CM,
+        Statistic.STRIDER_ONE_CM,
+        Statistic.WALK_ON_WATER_ONE_CM,
+        Statistic.WALK_UNDER_WATER_ONE_CM,
+        Statistic.SWIM_ONE_CM
+    )
 
     fun collect(
         startTime: LocalDateTime,
@@ -82,6 +98,7 @@ object StatisticsCollector : Listener {
         clear()
         plugin.server.onlinePlayers.forEach { player ->
             locationCache[player] = player.location
+            travelingStatistics.forEach { player.setStatistic(it, 0) }
         }
     }
 
@@ -111,7 +128,8 @@ object StatisticsCollector : Listener {
             temporaryRecord[StatisticsType.OPENED_LOOTS]!![player] = player.getStatistic(Statistic.CHEST_OPENED)
             temporaryRecord[StatisticsType.PLAYERS_KILLED]!![player] = player.getStatistic(Statistic.PLAYER_KILLS)
             temporaryRecord[StatisticsType.TEAM]!![player] = if (player.isRunner()) Teams.RUNNER else Teams.HUNTER
-            temporaryRecord[StatisticsType.TRAVELED]!![player] = player.location.distance(locationCache[player] ?: player.location).toLong()
+            temporaryRecord[StatisticsType.TRAVELED]!![player] = travelingStatistics.sumOf { player.getStatistic(it) }
+
         }
     }
 
@@ -241,7 +259,7 @@ object StatisticsCollector : Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     fun onPortal(e: PlayerPortalEvent) {
         val enviroment = e.to.world.environment
         val player = e.player
