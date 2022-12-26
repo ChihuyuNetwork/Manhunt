@@ -21,30 +21,45 @@ object CommandManhuntStatus {
     val main: CommandAPICommand = CommandAPICommand("manhuntstatus")
         .withAliases("mhstats")
         .withPermission(CommandPermission.NONE)
-        .withArguments(OfflinePlayerArgument("player").replaceSuggestions(ArgumentSuggestions.strings {
-            transaction {
-                Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+        .withArguments(
+            OfflinePlayerArgument("player").replaceSuggestions(
+                ArgumentSuggestions.strings {
+                    transaction {
+                        Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                    }
+                }
+            )
+        )
+        .executesPlayer(
+            PlayerCommandExecutor { sender, args ->
+                StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER)
             }
-        }))
-        .executesPlayer(PlayerCommandExecutor { sender, args ->
-            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER)
-        })
+        )
 
     val specifiedDate: CommandAPICommand = CommandAPICommand("manhuntstatus")
         .withAliases("mhstats")
         .withPermission(CommandPermission.NONE)
-        .withArguments(OfflinePlayerArgument("player").replaceSuggestions(ArgumentSuggestions.strings {
-            transaction {
-                Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
-            }
-        }), GreedyStringArgument("date").replaceSuggestions(ArgumentSuggestions.stringsAsync {
-            CompletableFuture.supplyAsync {
-                transaction {
-                    Users.selectAll().map { "${it[Users.date]}" }.toTypedArray()
+        .withArguments(
+            OfflinePlayerArgument("player").replaceSuggestions(
+                ArgumentSuggestions.strings {
+                    transaction {
+                        Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
+                    }
                 }
+            ),
+            GreedyStringArgument("date").replaceSuggestions(
+                ArgumentSuggestions.stringsAsync {
+                    CompletableFuture.supplyAsync {
+                        transaction {
+                            Users.selectAll().map { "${it[Users.date]}" }.toTypedArray()
+                        }
+                    }
+                }
+            )
+        )
+        .executesPlayer(
+            PlayerCommandExecutor { sender, args ->
+                StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER, LocalDateTime.parse(args[1] as String))
             }
-        }))
-        .executesPlayer(PlayerCommandExecutor { sender, args ->
-            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER, LocalDateTime.parse(args[1] as String))
-        })
+        )
 }

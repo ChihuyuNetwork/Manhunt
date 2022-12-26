@@ -13,9 +13,11 @@ object ManhuntStart {
 
     val main: CommandAPICommand = CommandAPICommand("start")
         .withArguments(StringArgument("mission").replaceSuggestions(ArgumentSuggestions.strings(ManhuntMission.values().map { it.name })))
-        .executesPlayer(PlayerCommandExecutor { sender, args ->
-            val rule = ManhuntMission.valueOf(args[0] as String)
-            GameManager.prepare(sender, rule)
-            Plugin.plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
-        })
+        .executesPlayer(
+            PlayerCommandExecutor { sender, args ->
+                val rule = ManhuntMission.valueOf(args[0] as String)
+                GameManager.prepare(sender, rule)
+                Plugin.plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
+            }
+        )
 }

@@ -10,8 +10,10 @@ object ManhuntGroup {
 
     val main: CommandAPICommand = CommandAPICommand("group")
         .withArguments(IntegerArgument("runners"))
-        .executes(CommandExecutor { sender, args ->
-            GameManager.grouping(args[0] as Int)
-            sender.sendMessage("${Plugin.prefix} ランナーとハンターをグルーピングしました")
-        })
+        .executes(
+            CommandExecutor { sender, args ->
+                GameManager.grouping(args[0] as Int)
+                sender.sendMessage("${Plugin.prefix} ランナーとハンターをグルーピングしました")
+            }
+        )
 }
