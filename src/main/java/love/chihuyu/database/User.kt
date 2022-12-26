@@ -25,35 +25,30 @@ class User(id: EntityID<Int>) : IntEntity(id) {
 
     var uuid by Users.uuid
     var date by Users.date
-
-    var deathes by Users.deathes
-
     var team by Users.team
+
     var aliveTime by Users.aliveTime
-    var timeToTheEnd by Users.timeToTheEnd
-    var timeToNether by Users.timeToNether
-
-    var playersKilled by Users.playersKilled
-    var mobsKilled by Users.mobsKilled
-    var endermansKilled by Users.endermansKilled
+    var arrowHitted by Users.arrowHitted
+    var arrowShooted by Users.arrowShooted
     var blazesKilled by Users.blazesKilled
-
     var blocksBroken by Users.blocksBroken
     var blocksPlaced by Users.blocksPlaced
-    var traveled by Users.traveled
-
-    var itemsTraded by Users.itemsTraded
-    var itemsBartered by Users.itemsBartered
-    var openedLoots by Users.openedLoots
-
-    var foodsCrafted by Users.foodsCrafted
-    var ironsSmelt by Users.ironsSmelt
     var coalsMined by Users.coalsMined
-    var potionsBrewed by Users.potionsBrewed
+    var deathes by Users.deathes
+    var endermansKilled by Users.endermansKilled
+    var ironsSmelt by Users.ironsSmelt
+    var itemsBartered by Users.itemsBartered
     var itemsCrafted by Users.itemsCrafted
     var itemsEnchanted by Users.itemsEnchanted
+    var itemsTraded by Users.itemsTraded
+    var mobsKilled by Users.mobsKilled
+    var openedLoots by Users.openedLoots
+    var playersKilled by Users.playersKilled
+    var potionsBrewed by Users.potionsUsed
+    var gapplesUsed by Users.gapplesUsed
+    var timeToNether by Users.timeToNether
+    var timeToTheEnd by Users.timeToTheEnd
     var toolsRepaired by Users.toolsRepaired
-
-    var arrowShooted by Users.arrowShooted
-    var arrowHitted by Users.arrowHitted
+    var traveled by Users.traveled
+    var chats by Users.chats
 }

@@ -1,6 +1,7 @@
 package love.chihuyu.utils
 
 import love.chihuyu.game.GameManager
+import love.chihuyu.game.Teams
 import org.bukkit.entity.Player
 
 object TeamUtil {
@@ -11,5 +12,13 @@ object TeamUtil {
 
     fun Player.isHunter(): Boolean {
         return this in GameManager.hunters()
+    }
+
+    fun Player.getTeam(): Teams {
+        return when (GameManager.board.getPlayerTeam(this)?.name) {
+            "runner" -> Teams.RUNNER
+            "hunter" -> Teams.HUNTER
+            else -> Teams.HUNTER
+        }
     }
 }

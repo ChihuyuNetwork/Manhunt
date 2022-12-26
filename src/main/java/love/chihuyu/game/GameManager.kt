@@ -100,11 +100,7 @@ object GameManager {
             plugin.server.onlinePlayers.forEach {
                 it.showTitle(
                     Title.title(
-                        Component.text(
-                            "${ChatColor.BOLD}" + "> ".repeat(remainCountdown) + remainCountdown + " <".repeat(
-                                remainCountdown
-                            )
-                        ),
+                        Component.text("${ChatColor.BOLD}$remainCountdown"),
                         Component.empty(),
                         Title.Times.times(
                             Duration.ofSeconds(0), Duration.ofSeconds(2), Duration.ofSeconds(0)
@@ -138,7 +134,6 @@ object GameManager {
                 )
             )
 
-            it.inventory.clear()
             it.gameMode = GameMode.SURVIVAL
             it.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
             it.playSound(it.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f)
@@ -194,7 +189,7 @@ object GameManager {
             }
         }
 
-        StatisticsCollector.onGameEnd(missioned)
+        StatisticsCollector.onGameEnd()
         StatisticsCollector.collect(startLocalDate)
         StatisticsCollector.clear()
     }

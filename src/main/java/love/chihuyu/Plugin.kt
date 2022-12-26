@@ -8,6 +8,7 @@ import love.chihuyu.database.Users
 import love.chihuyu.game.*
 import love.chihuyu.game.GameManager.hunters
 import love.chihuyu.game.GameManager.runners
+import love.chihuyu.gui.StatisticsScreen
 import love.chihuyu.utils.CompassUtil
 import love.chihuyu.utils.ItemUtil
 import love.chihuyu.utils.runTaskLater
@@ -63,6 +64,7 @@ class Plugin : JavaPlugin(), Listener {
         server.pluginManager.registerEvents(MissionChecker, this)
         server.pluginManager.registerEvents(EventCanceller, this)
         server.pluginManager.registerEvents(StatisticsCollector, this)
+        server.pluginManager.registerEvents(StatisticsScreen, this)
 
         compassTask = runTaskTimer(0, 0) {
             server.onlinePlayers.forEach {

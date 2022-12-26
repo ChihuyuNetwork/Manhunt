@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.OfflinePlayerArgument
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import love.chihuyu.database.Matches
+import love.chihuyu.game.Teams
 import love.chihuyu.gui.StatisticsScreen
 import org.bukkit.OfflinePlayer
 import org.jetbrains.exposed.sql.selectAll
@@ -20,18 +21,18 @@ object CommandManhuntStatus {
         .withPermission(CommandPermission.NONE)
         .withArguments(OfflinePlayerArgument("player"))
         .executesPlayer(PlayerCommandExecutor { sender, args ->
-            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer)
+            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER)
         })
 
     val specifiedDate: CommandAPICommand = CommandAPICommand("manhuntstatus")
         .withAliases("mhstats")
-        .withPermission(CommandPermission.NONE)
+        .withPermission(CommandPermission.OP)
         .withArguments(OfflinePlayerArgument("player"), StringArgument("date").replaceSuggestions(ArgumentSuggestions.strings(
             transaction {
-                Matches.selectAll().map { it[Matches.date].toString() }
+                Matches.selectAll().map { "\"${it[Matches.date]}\"" }
             }
         )))
         .executesPlayer(PlayerCommandExecutor { sender, args ->
-            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, LocalDateTime.parse(args[1] as String))
+            StatisticsScreen.openStatistics(sender, args[0] as OfflinePlayer, Teams.HUNTER, LocalDateTime.parse(args[1] as String))
         })
 }

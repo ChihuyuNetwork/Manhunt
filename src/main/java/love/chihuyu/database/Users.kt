@@ -8,37 +8,45 @@ object Users : IntIdTable("users") {
 
     val uuid = uuid("uuid")
     val date = datetime("datetime")
-
-    val deathes = integer("deathes")
-
     val team = enumeration("team", Teams::class)
+
+    // 移動
     val aliveTime = long("aliveTime")
     val timeToTheEnd = long("timeToTheEnd")
     val timeToNether = long("timeToNether")
+    val traveled = long("traveled")
 
+    // PvP
+    val deathes = integer("deathes")
     val playersKilled = integer("playersKilled")
+    val arrowShooted = integer("arrowShooted")
+    val arrowHitted = integer("arrowHitted")
+
+    // モブ
     val mobsKilled = integer("mobsKilled")
     val endermansKilled = integer("endermansKilled")
     val blazesKilled = integer("blazesKilled")
 
+    // ブロック
     val blocksBroken = integer("blocksBroken")
     val blocksPlaced = integer("blocksPlaced")
-    val traveled = long("traveled")
 
-    val itemsTraded = integer("itemsTraded")
-    val itemsBartered = integer("itemsBartered")
-    val openedLoots = integer("openedLoots")
-
-    val foodsCrafted = integer("foodsCrafted")
-    val ironsSmelt = integer("ironsSmelt")
-    val coalsMined = integer("coalsMined")
-    val potionsBrewed = integer("potionsBrewed")
+    // アイテム
     val itemsCrafted = integer("itemsCrafted")
+    val potionsUsed = integer("potionsUsed")
+    val gapplesUsed = integer("gapplesUsed")
     val itemsEnchanted = integer("itemsEnchanted")
     val toolsRepaired = integer("toolsRepaired")
 
-    val arrowShooted = integer("arrowShooted")
-    val arrowHitted = integer("arrowHitted")
+    // 準備
+    val ironsSmelt = integer("ironsSmelt")
+    val coalsMined = integer("coalsMined")
+    val itemsTraded = integer("itemsTraded")
+    val itemsBartered = integer("itemsBartered")
+
+    // ワールド
+    val openedLoots = integer("openedLoots")
+    val chats = integer("chats")
 
     init {
         uniqueIndex(uuid, date)
