@@ -25,9 +25,7 @@ object CommandManhuntStatus {
             OfflinePlayerArgument("player").replaceSuggestions(
                 ArgumentSuggestions.stringsAsync {
                     CompletableFuture.supplyAsync {
-                        transaction {
-                            Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
-                        }
+                        transaction { Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray() }
                     }
                 }
             )
@@ -45,18 +43,14 @@ object CommandManhuntStatus {
             OfflinePlayerArgument("player").replaceSuggestions(
                 ArgumentSuggestions.stringsAsync {
                     CompletableFuture.supplyAsync {
-                        transaction {
-                            Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray()
-                        }
+                        transaction { Users.selectAll().map { Bukkit.getOfflinePlayer(it[Users.uuid]).name }.toTypedArray() }
                     }
                 }
             ),
             GreedyStringArgument("date").replaceSuggestions(
                 ArgumentSuggestions.stringsAsync {
                     CompletableFuture.supplyAsync {
-                        transaction {
-                            Users.selectAll().map { "${it[Users.date]}" }.toTypedArray()
-                        }
+                        transaction { Users.selectAll().map { "${it[Users.date]}" }.toTypedArray() }
                     }
                 }
             )

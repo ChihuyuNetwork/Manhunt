@@ -184,7 +184,8 @@ object GameManager {
             addLogger(StdOutSqlLogger)
             Matches.insert {
                 it[date] = startLocalDate
-                it[matchTime] = endEpoch - startEpoch
+                it[seed] = plugin.server.getWorld("world")?.seed ?: 0L
+                it[matchTime] = Instant.now().epochSecond - startEpoch
                 it[winnerTeam] = if (missioned) Teams.RUNNER else Teams.HUNTER
             }
         }

@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 
 object Matches : Table("matches") {
     val date = datetime("datetime").uniqueIndex()
+    val seed = long("seed")
     val matchTime = long("matchTime")
     val winnerTeam = enumeration<Teams>("winnerTeam")
 
