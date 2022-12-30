@@ -26,7 +26,7 @@ object EventCanceller : Listener {
                 else
                     true
             else
-                true
+                e.cause != EntityDamageEvent.DamageCause.VOID
     }
 
     @EventHandler
