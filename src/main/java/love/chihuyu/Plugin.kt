@@ -174,13 +174,18 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onChat(e: AsyncPlayerChatEvent) {
         val player = e.player
+        val isGlobal = e.message.startsWith('!')
 
         if (player.gameMode == GameMode.SPECTATOR) {
+            if (!isGlobal) {
+                e.recipients.removeIf { player.gameMode != GameMode.SPECTATOR }
+            } else {
+                e.message = e.message.substringAfter('!')
+            }
             e.format = "${ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
             return
         }
 
-        val isGlobal = e.message.startsWith('!')
         val teamColor = if (isGlobal) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
         val teamPrefix =
             when (player) {

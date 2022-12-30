@@ -23,7 +23,6 @@ import org.bukkit.event.inventory.FurnaceExtractEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerItemConsumeEvent
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerPortalEvent
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -36,7 +35,6 @@ import java.time.LocalDateTime
 
 object StatisticsCollector : Listener {
     private val temporaryRecord = hashMapOf<StatisticsType, MutableMap<OfflinePlayer, Any>>()
-    private val locationCache = mutableMapOf<OfflinePlayer, Location>()
     private val travelingStatistics = listOf(
         Statistic.WALK_ONE_CM,
         Statistic.BOAT_ONE_CM,
@@ -61,7 +59,7 @@ object StatisticsCollector : Listener {
                 transaction {
                     addLogger(StdOutSqlLogger)
                     User.findOrNew(player.uniqueId, startTime) {
-                        this.aliveTime = temporaryRecord[StatisticsType.ALIVE_TIME]!![player] as? Long ?: -1
+                        this.aliveTime = temporaryRecord[StatisticsType.ALIVE_TIME]!![player] as? Long ?: 0
                         this.arrowHitted = temporaryRecord[StatisticsType.ARROW_HITTED]!![player] as? Int ?: 0
                         this.arrowShooted = temporaryRecord[StatisticsType.ARROW_SHOOTED]!![player] as? Int ?: 0
                         this.blazesKilled = temporaryRecord[StatisticsType.BLAZES_KILLED]!![player] as? Int ?: 0
@@ -82,8 +80,8 @@ object StatisticsCollector : Listener {
                         this.playersKilled = temporaryRecord[StatisticsType.PLAYERS_KILLED]!![player] as? Int ?: 0
                         this.potionsBrewed = temporaryRecord[StatisticsType.POTIONS_USED]!![player] as? Int ?: 0
                         this.team = temporaryRecord[StatisticsType.TEAM]!![player] as? Teams ?: Teams.HUNTER
-                        this.timeToNether = temporaryRecord[StatisticsType.TIME_TO_NETHER]!![player] as? Long ?: -1
-                        this.timeToTheEnd = temporaryRecord[StatisticsType.TIME_TO_THE_END]!![player] as? Long ?: -1
+                        this.timeToNether = temporaryRecord[StatisticsType.TIME_TO_NETHER]!![player] as? Long ?: 0
+                        this.timeToTheEnd = temporaryRecord[StatisticsType.TIME_TO_THE_END]!![player] as? Long ?: 0
                         this.toolsRepaired = temporaryRecord[StatisticsType.TOOLS_REPAIRED]!![player] as? Int ?: 0
                         this.traveled = temporaryRecord[StatisticsType.TRAVELED]!![player] as? Long ?: 0
                     }
@@ -97,7 +95,6 @@ object StatisticsCollector : Listener {
     fun onGameStart() {
         clear()
         plugin.server.onlinePlayers.forEach { player ->
-            locationCache[player] = player.location
             travelingStatistics.forEach { player.setStatistic(it, 0) }
         }
     }
@@ -128,7 +125,7 @@ object StatisticsCollector : Listener {
             temporaryRecord[StatisticsType.OPENED_LOOTS]!![player] = player.getStatistic(Statistic.CHEST_OPENED)
             temporaryRecord[StatisticsType.PLAYERS_KILLED]!![player] = player.getStatistic(Statistic.PLAYER_KILLS)
             temporaryRecord[StatisticsType.TEAM]!![player] = if (player.isRunner()) Teams.RUNNER else Teams.HUNTER
-            temporaryRecord[StatisticsType.TRAVELED]!![player] = travelingStatistics.sumOf { player.getStatistic(it) }
+            temporaryRecord[StatisticsType.TRAVELED]!![player] = travelingStatistics.sumOf { player.getStatistic(it).toLong() }
 
         }
     }
@@ -220,12 +217,6 @@ object StatisticsCollector : Listener {
     }
 
     @EventHandler
-    fun onJoin(e: PlayerJoinEvent) {
-        val player = e.player
-        if (locationCache[player] == null) locationCache[player] = player.location
-    }
-
-    @EventHandler
     fun onPlace(e: BlockPlaceEvent) {
         val player = e.player
         temporaryRecord[StatisticsType.BLOCKS_PLACED]!![player] =
@@ -282,6 +273,5 @@ object StatisticsCollector : Listener {
 
     fun clear() {
         StatisticsType.values().forEach { temporaryRecord[it] = mutableMapOf() }
-        locationCache.clear()
     }
 }
