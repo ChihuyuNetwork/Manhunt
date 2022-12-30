@@ -8,10 +8,7 @@ import love.chihuyu.utils.TeamUtil.getTeam
 import love.chihuyu.utils.TeamUtil.isRunner
 import org.bukkit.*
 import org.bukkit.block.Chest
-import org.bukkit.entity.Blaze
-import org.bukkit.entity.Enderman
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
+import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -69,6 +66,7 @@ object StatisticsCollector : Listener {
                         this.coalsMined = temporaryRecord[StatisticsType.COALS_MINED]!![player] as? Int ?: 0
                         this.deathes = temporaryRecord[StatisticsType.DEATHES]!![player] as? Int ?: 0
                         this.endermansKilled = temporaryRecord[StatisticsType.ENDERMANS_KILLED]!![player] as? Int ?: 0
+                        this.golemsKilled = temporaryRecord[StatisticsType.GOLEMS_KILLED]!![player] as? Int ?: 0
                         this.gapplesUsed = temporaryRecord[StatisticsType.GAPPLES_USED]!![player] as? Int ?: 0
                         this.ironsSmelt = temporaryRecord[StatisticsType.IRONS_SMELT]!![player] as? Int ?: 0
                         this.itemsBartered = temporaryRecord[StatisticsType.ITEMS_BARTARED]!![player] as? Int ?: 0
@@ -244,9 +242,10 @@ object StatisticsCollector : Listener {
         when (entity) {
             is Enderman -> temporaryRecord[StatisticsType.ENDERMANS_KILLED]!![player] =
                 (temporaryRecord[StatisticsType.ENDERMANS_KILLED]!![player] as? Int ?: 0).inc()
-
             is Blaze -> temporaryRecord[StatisticsType.BLAZES_KILLED]!![player] =
                 (temporaryRecord[StatisticsType.BLAZES_KILLED]!![player] as? Int ?: 0).inc()
+            is Golem -> temporaryRecord[StatisticsType.GOLEMS_KILLED]!![player] =
+                (temporaryRecord[StatisticsType.GOLEMS_KILLED]!![player] as? Int ?: 0).inc()
         }
     }
 

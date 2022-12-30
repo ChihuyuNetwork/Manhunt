@@ -26,6 +26,7 @@ object Users : IntIdTable("users") {
     val mobsKilled = integer("mobsKilled")
     val endermansKilled = integer("endermansKilled")
     val blazesKilled = integer("blazesKilled")
+    val golemsKilled = integer("golemsKilled")
 
     // ブロック
     val blocksBroken = integer("blocksBroken")

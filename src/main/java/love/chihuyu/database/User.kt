@@ -36,6 +36,7 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var coalsMined by Users.coalsMined
     var deathes by Users.deathes
     var endermansKilled by Users.endermansKilled
+    var golemsKilled by Users.golemsKilled
     var ironsSmelt by Users.ironsSmelt
     var itemsBartered by Users.itemsBartered
     var itemsCrafted by Users.itemsCrafted

@@ -10,6 +10,7 @@ enum class StatisticsType {
     COALS_MINED,
     DEATHES,
     ENDERMANS_KILLED,
+    GOLEMS_KILLED,
     IRONS_SMELT,
     ITEMS_BARTARED,
     ITEMS_CRAFTED,

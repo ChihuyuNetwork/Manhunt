@@ -74,7 +74,8 @@ object StatisticsScreen : Listener {
                     lore = listOf(
                         "${ChatColor.WHITE}全体キル率: ${"%.2f".format(statisticsData.sumOf { it[Users.mobsKilled].toDouble() } / plays.toDouble())}回",
                         "${ChatColor.WHITE}エンダーマンキル率: ${"%.2f".format(statisticsData.sumOf { it[Users.endermansKilled].toDouble() } / plays.toDouble())}回",
-                        "${ChatColor.WHITE}ブレイズキル率: ${"%.2f".format(statisticsData.sumOf { it[Users.blazesKilled].toDouble() } / plays.toDouble())}回"
+                        "${ChatColor.WHITE}ブレイズキル率: ${"%.2f".format(statisticsData.sumOf { it[Users.blazesKilled].toDouble() } / plays.toDouble())}回",
+                        "${ChatColor.WHITE}ゴーレムキル率: ${"%.2f".format(statisticsData.sumOf { it[Users.golemsKilled].toDouble() } / plays.toDouble())}回"
                     )
                 )
             )
@@ -211,7 +212,8 @@ object StatisticsScreen : Listener {
                     lore = listOf(
                         "${ChatColor.WHITE}全体キル: ${"%.2f".format(statisticsData.sumOf { it[Users.mobsKilled].toDouble() })}回",
                         "${ChatColor.WHITE}エンダーマンキル: ${"%.2f".format(statisticsData.sumOf { it[Users.endermansKilled].toDouble() })}回",
-                        "${ChatColor.WHITE}ブレイズキル: ${"%.2f".format(statisticsData.sumOf { it[Users.blazesKilled].toDouble() })}回"
+                        "${ChatColor.WHITE}ブレイズキル: ${"%.2f".format(statisticsData.sumOf { it[Users.blazesKilled].toDouble() })}回",
+                        "${ChatColor.WHITE}ゴーレムキル: ${"%.2f".format(statisticsData.sumOf { it[Users.golemsKilled].toDouble() })}回"
                     )
                 )
             )
