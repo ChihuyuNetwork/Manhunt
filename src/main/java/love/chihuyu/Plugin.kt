@@ -177,21 +177,21 @@ class Plugin : JavaPlugin(), Listener {
         val isGlobal = e.message.startsWith('!')
 
         if (player.gameMode == GameMode.SPECTATOR) {
-            if (!isGlobal) {
-                e.recipients.removeIf { player.gameMode != GameMode.SPECTATOR }
-            } else {
+            if (isGlobal) {
                 e.message = e.message.substringAfter('!')
+            } else {
+                e.recipients.removeIf { it.gameMode != GameMode.SPECTATOR }
             }
-            e.format = "${ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
+            e.format = "${if (isGlobal) ChatColor.DARK_PURPLE else ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
             return
         }
 
         val teamColor = if (isGlobal) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
         val teamPrefix =
             when (player) {
-                in hunters() -> "$teamColor[H]${ChatColor.RESET}"
-                in runners() -> "$teamColor[R]${ChatColor.RESET}"
-                else -> "$teamColor[N]${ChatColor.RESET}"
+                in hunters() -> "$teamColor[HUNT]${ChatColor.RESET}"
+                in runners() -> "$teamColor[RUN]${ChatColor.RESET}"
+                else -> "$teamColor[NULL]${ChatColor.RESET}"
             }
 
         e.recipients.removeIf { !isGlobal && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
