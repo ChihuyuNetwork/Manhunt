@@ -183,10 +183,11 @@ object GameManager {
         transaction {
             addLogger(StdOutSqlLogger)
             Matches.insert {
-                it[date] = startLocalDate
-                it[seed] = plugin.server.getWorld("world")?.seed ?: 0L
-                it[matchTime] = Instant.now().epochSecond - startEpoch
-                it[winnerTeam] = if (missioned) Teams.RUNNER else Teams.HUNTER
+                it[this.date] = startLocalDate
+                it[this.seed] = plugin.server.getWorld("world")?.seed ?: 0L
+                it[this.matchTime] = Instant.now().epochSecond - startEpoch
+                it[this.winnerTeam] = if (missioned) Teams.RUNNER else Teams.HUNTER
+                it[this.mission] = this@GameManager.mission
             }
         }
 
