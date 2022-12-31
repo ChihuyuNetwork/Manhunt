@@ -44,13 +44,11 @@ object StatisticsScreen : Listener {
                     lore = listOf(
                         "${ChatColor.WHITE}平均エンド到達時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.timeToTheEnd] } / plays)}",
                         "${ChatColor.WHITE}平均ネザー到達時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.timeToNether] } / plays)}",
-                        "${ChatColor.WHITE}平均移動距離: ${"%.2f".format(statisticsData.sumOf { it[Users.traveled].toDouble() } / plays.toDouble())}m"
+                        "${ChatColor.WHITE}平均移動距離: ${"%.2f".format(statisticsData.sumOf { it[Users.traveled].toDouble() } / 100 / plays.toDouble())}m"
                     ).plus(
                         if (team == Teams.RUNNER) {
                             "${ChatColor.WHITE}平均生存時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.aliveTime] } / plays)}"
-                        } else {
-                            ""
-                        }
+                        } else ""
                     )
                 )
             )
@@ -182,7 +180,7 @@ object StatisticsScreen : Listener {
                     lore = listOf(
                         "${ChatColor.WHITE}エンド到達時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.timeToTheEnd] })}",
                         "${ChatColor.WHITE}ネザー到達時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.timeToNether] })}",
-                        "${ChatColor.WHITE}移動距離: ${"%.2f".format(statisticsData.sumOf { it[Users.traveled].toDouble() })}m"
+                        "${ChatColor.WHITE}移動距離: ${"%.2f".format(statisticsData.sumOf { it[Users.traveled].toDouble() } / 100)}m"
                     ).plus(
                         if (team == Teams.RUNNER) {
                             "${ChatColor.WHITE}生存時間: ${EpochUtil.formatTime(statisticsData.sumOf { it[Users.aliveTime] })}"
@@ -281,14 +279,6 @@ object StatisticsScreen : Listener {
                     meta.owningPlayer = target
                     this.itemMeta = meta
                 }
-            )
-
-            inv.setItem(
-                44,
-                ItemUtil.create(
-                    Material.PAPER,
-                    name = "${if (team == Teams.HUNTER) ChatColor.GREEN else ChatColor.RESET}ハンター${ChatColor.GRAY}/${ChatColor.RESET}${if (team == Teams.RUNNER) ChatColor.GREEN else ChatColor.RESET}ランナー"
-                )
             )
 
             inv.setItem(

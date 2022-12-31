@@ -1,6 +1,7 @@
 package love.chihuyu.commands
 
 import dev.jorel.commandapi.CommandAPICommand
+import dev.jorel.commandapi.CommandPermission
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.GreedyStringArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
@@ -16,6 +17,7 @@ object CommandManhuntMatches {
 
     val main = CommandAPICommand("manhuntmatches")
         .withAliases("mhmathces")
+        .withPermission(CommandPermission.OP)
         .withArguments(
             GreedyStringArgument("date").replaceSuggestions(
                 ArgumentSuggestions.stringsAsync {
