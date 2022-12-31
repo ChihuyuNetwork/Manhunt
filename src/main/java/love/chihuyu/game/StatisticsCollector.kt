@@ -10,7 +10,6 @@ import org.bukkit.*
 import org.bukkit.block.Chest
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -82,6 +81,7 @@ object StatisticsCollector : Listener {
                         this.timeToTheEnd = temporaryRecord[StatisticsType.TIME_TO_THE_END]!![player] as? Long ?: 0
                         this.toolsRepaired = temporaryRecord[StatisticsType.TOOLS_REPAIRED]!![player] as? Int ?: 0
                         this.traveled = temporaryRecord[StatisticsType.TRAVELED]!![player] as? Long ?: 0
+                        this.mission = GameManager.mission
                     }
                 }
             }.onFailure {
@@ -249,7 +249,7 @@ object StatisticsCollector : Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler()
     fun onPortal(e: PlayerPortalEvent) {
         val enviroment = e.to.world.environment
         val player = e.player

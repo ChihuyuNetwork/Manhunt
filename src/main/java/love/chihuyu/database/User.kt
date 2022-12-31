@@ -26,6 +26,7 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var uuid by Users.uuid
     var date by Users.date
     var team by Users.team
+    var mission by Users.mission
 
     var aliveTime by Users.aliveTime
     var arrowHitted by Users.arrowHitted

@@ -1,5 +1,6 @@
 package love.chihuyu.database
 
+import love.chihuyu.game.ManhuntMission
 import love.chihuyu.game.Teams
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
@@ -9,6 +10,7 @@ object Users : IntIdTable("users") {
     val uuid = uuid("uuid")
     val date = datetime("datetime")
     val team = enumeration("team", Teams::class)
+    val mission = enumeration<ManhuntMission>("mission").default(ManhuntMission.ENTER_END_PORTAL)
 
     // 移動
     val aliveTime = long("aliveTime")
@@ -50,6 +52,6 @@ object Users : IntIdTable("users") {
     val chats = integer("chats")
 
     init {
-        uniqueIndex(uuid, date)
+        uniqueIndex(uuid, date, mission)
     }
 }
