@@ -13,6 +13,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerMoveEvent
 
 object EventCanceller : Listener {
 
@@ -62,5 +63,10 @@ object EventCanceller : Listener {
     @EventHandler
     fun onAchievement(e: PlayerAdvancementCriterionGrantEvent) {
         e.isCancelled = e.player.gameMode == GameMode.SPECTATOR
+    }
+
+    @EventHandler
+    fun onMove(e: PlayerMoveEvent) {
+        e.isCancelled = e.player in GameManager.frozen
     }
 }

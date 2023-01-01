@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
+import org.bukkit.OfflinePlayer
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
@@ -28,6 +29,7 @@ import kotlin.math.ceil
 object GameManager {
 
     val board = plugin.server.scoreboardManager.mainScoreboard
+    val frozen = mutableListOf<OfflinePlayer>()
 
     fun hunters() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == Teams.HUNTER.teamName }.toSet()
     fun runners() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == Teams.RUNNER.teamName }.toSet()
@@ -152,10 +154,11 @@ object GameManager {
         }
 
         hunters().forEach {
-            it.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 30 * 20, 254, false, false))
-            it.addPotionEffect(PotionEffect(PotionEffectType.SLOW_DIGGING, 30 * 20, 254, false, false))
-            it.addPotionEffect(PotionEffect(PotionEffectType.SLOW, 30 * 20, 254, false, false))
-            it.addPotionEffect(PotionEffect(PotionEffectType.JUMP, 30 * 20, 136, false, false))
+            frozen.add(it)
+        }
+
+        plugin.runTaskLater(600) {
+            frozen.clear()
         }
 
         StatisticsCollector.onGameStart()
