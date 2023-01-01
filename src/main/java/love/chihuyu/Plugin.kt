@@ -5,6 +5,7 @@ import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.commands.CommandManhuntMatches
 import love.chihuyu.commands.CommandManhuntStatus
 import love.chihuyu.database.Matches
+import love.chihuyu.database.NameRecord
 import love.chihuyu.database.Users
 import love.chihuyu.game.*
 import love.chihuyu.game.GameManager.hunters
@@ -37,10 +38,7 @@ import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
@@ -85,6 +83,7 @@ class Plugin : JavaPlugin(), Listener {
             addLogger(StdOutSqlLogger)
             SchemaUtils.createMissingTablesAndColumns(Users, withLogs = true)
             SchemaUtils.createMissingTablesAndColumns(Matches, withLogs = true)
+            SchemaUtils.createMissingTablesAndColumns(NameRecord, withLogs = true)
         }
 
         CommandManhunt.main.register()
@@ -148,6 +147,20 @@ class Plugin : JavaPlugin(), Listener {
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.player
 
+        transaction {
+            addLogger(StdOutSqlLogger)
+            if (NameRecord.select { NameRecord.uuid eq player.uniqueId }.count() == 0L) {
+                NameRecord.insert {
+                    it[this.uuid] = player.uniqueId
+                    it[this.ign] = player.name
+                }
+            } else {
+                NameRecord.update({ NameRecord.uuid eq player.uniqueId }) {
+                    it[this.ign] = player.name
+                }
+            }
+        }
+
         if (player !in hunters() && player !in runners()) {
             GameManager.board.getTeam(Teams.HUNTER.teamName)?.addPlayer(player)
         }
@@ -156,14 +169,12 @@ class Plugin : JavaPlugin(), Listener {
         obj.displaySlot = DisplaySlot.BELOW_NAME
 
         player.scoreboard = GameManager.board
-
         player.gameMode =
             if (player.gameMode == GameMode.SPECTATOR) {
                 GameMode.SPECTATOR
             } else {
                 GameMode.SURVIVAL
             }
-
         ItemUtil.giveCompassIfNone(player)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
     }

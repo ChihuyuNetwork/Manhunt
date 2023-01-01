@@ -1,5 +1,6 @@
 package love.chihuyu.database
 
+import love.chihuyu.game.ManhuntMission
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -10,17 +11,18 @@ import java.util.*
 
 class User(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<User>(Users) {
-        inline fun findOrNew(uuid: UUID, datetime: LocalDateTime, crossinline init: User.() -> Unit = {}) =
-            find(uuid, datetime) ?: new {
+        inline fun findOrNew(uuid: UUID, datetime: LocalDateTime, mission: ManhuntMission, crossinline init: User.() -> Unit = {}) =
+            find(uuid, datetime, mission) ?: new {
                 this.uuid = uuid
                 this.date = datetime
+                this.mission = mission
                 transaction {
                     init()
                 }
             }
 
-        fun find(uuid: UUID, datetime: LocalDateTime) =
-            transaction { find { (Users.uuid eq uuid) and (Users.date eq datetime) }.limit(1).firstOrNull() }
+        fun find(uuid: UUID, datetime: LocalDateTime, mission: ManhuntMission) =
+            transaction { find { (Users.uuid eq uuid) and (Users.date eq datetime) and (Users.mission eq mission) }.limit(1).firstOrNull() }
     }
 
     var uuid by Users.uuid

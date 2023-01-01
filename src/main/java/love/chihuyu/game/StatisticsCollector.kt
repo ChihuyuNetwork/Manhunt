@@ -54,7 +54,7 @@ object StatisticsCollector : Listener {
             runCatching {
                 transaction {
                     addLogger(StdOutSqlLogger)
-                    User.findOrNew(player.uniqueId, startTime) {
+                    User.findOrNew(player.uniqueId, startTime, GameManager.mission) {
                         this.aliveTime = temporaryRecord[StatisticsType.ALIVE_TIME]!![player] as? Long ?: 0
                         this.arrowHitted = temporaryRecord[StatisticsType.ARROW_HITTED]!![player] as? Int ?: 0
                         this.arrowShooted = temporaryRecord[StatisticsType.ARROW_SHOOTED]!![player] as? Int ?: 0
