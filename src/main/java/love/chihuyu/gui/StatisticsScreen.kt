@@ -26,11 +26,12 @@ object StatisticsScreen : Listener {
             Teams.HUNTER -> "ハンター"
             Teams.RUNNER -> "ランナー"
         }
+        val playerName = transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+            ?.get(NameRecord.ign) ?: "" }
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(
-                "${ChatColor.BOLD}${transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
-                    ?.get(NameRecord.ign) ?: "" }} / ${localizedTeamName}成績"
+                "${ChatColor.BOLD}$playerName / ${localizedTeamName}成績"
             )
         )
         transaction {
@@ -133,7 +134,7 @@ object StatisticsScreen : Listener {
                 31,
                 ItemUtil.create(
                     Material.PLAYER_HEAD,
-                    name = "${ChatColor.BOLD}${target.name}",
+                    name = "${ChatColor.BOLD}$playerName",
                     lore = listOf(
                         "ゲームプレイ回数: ${Users.select { Users.uuid eq target.uniqueId }.count()}",
                         "${localizedTeamName}プレイ回数: ${Users.select { (Users.uuid eq target.uniqueId) and (Users.team eq team) }.count()}"
@@ -163,11 +164,12 @@ object StatisticsScreen : Listener {
             Teams.HUNTER -> "ハンター"
             Teams.RUNNER -> "ランナー"
         }
+        val playerName = transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+            ?.get(NameRecord.ign) ?: "" }
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(
-                "${ChatColor.BOLD}${transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
-                    ?.get(NameRecord.ign) ?: "" }} / ${localizedTeamName}成績"
+                "${ChatColor.BOLD}$playerName / ${localizedTeamName}成績"
             )
         )
         transaction {
@@ -272,7 +274,7 @@ object StatisticsScreen : Listener {
                 31,
                 ItemUtil.create(
                     Material.PLAYER_HEAD,
-                    name = "${ChatColor.BOLD}${target.name}",
+                    name = "${ChatColor.BOLD}$playerName",
                     lore = listOf(
                         "ゲームプレイ回数: ${Users.select { Users.uuid eq target.uniqueId }.count()}",
                         "${localizedTeamName}プレイ回数: ${Users.select { (Users.uuid eq target.uniqueId) and (Users.team eq team) }.count()}"
