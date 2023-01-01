@@ -19,7 +19,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.event.EventHandler
@@ -41,6 +40,7 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import java.time.Instant
 
 class Plugin : JavaPlugin(), Listener {
 
@@ -177,6 +177,10 @@ class Plugin : JavaPlugin(), Listener {
             }
         ItemUtil.giveCompassIfNone(player)
         player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false))
+
+        if (Instant.now().epochSecond - GameManager.startEpoch < 30 && GameManager.started && player in hunters()) {
+            GameManager.frozen.add(player)
+        }
     }
 
     @EventHandler
@@ -211,31 +215,6 @@ class Plugin : JavaPlugin(), Listener {
 
         if (isGlobal) e.message = e.message.substringAfter('!')
         e.format = "$teamPrefix ${player.name}: ${e.message}"
-    }
-
-    @EventHandler
-    fun logToPlanks(e: PlayerInteractEvent) {
-        val player = e.player
-        val action = e.action
-        val item = e.item ?: return
-        if (action != Action.RIGHT_CLICK_AIR) return
-        if (item.type !in listOf(
-                Material.OAK_LOG,
-                Material.DARK_OAK_LOG,
-                Material.JUNGLE_LOG,
-                Material.ACACIA_LOG,
-                Material.MANGROVE_LOG,
-                Material.BIRCH_LOG,
-                Material.SPRUCE_LOG,
-            )
-        ) return
-
-        val amount = player.inventory.itemInMainHand.amount
-        player.inventory.itemInMainHand.amount = 0
-        player.inventory.addItem(ItemUtil.create(Material.OAK_PLANKS, amount = amount * 4)).forEach { (amount, itemStack) ->
-            player.world.dropItemNaturally(player.location, ItemUtil.create(itemStack.type, amount = amount))
-        }
-        player.playSound(player.location, Sound.ENTITY_ITEM_PICKUP, 1f, 1f)
     }
 
     @EventHandler
