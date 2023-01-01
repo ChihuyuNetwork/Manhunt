@@ -1,5 +1,6 @@
 package love.chihuyu.gui
 
+import love.chihuyu.database.NameRecord
 import love.chihuyu.database.Users
 import love.chihuyu.game.Teams
 import love.chihuyu.utils.EpochUtil
@@ -28,7 +29,8 @@ object StatisticsScreen : Listener {
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(
-                "${ChatColor.BOLD}${target.name} / ${localizedTeamName}成績"
+                "${ChatColor.BOLD}${transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+                    ?.get(NameRecord.ign) ?: "" }} / ${localizedTeamName}成績"
             )
         )
         transaction {
@@ -164,7 +166,8 @@ object StatisticsScreen : Listener {
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(
-                "${ChatColor.BOLD}${target.name} / ${localizedTeamName}成績"
+                "${ChatColor.BOLD}${transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+                    ?.get(NameRecord.ign) ?: "" }} / ${localizedTeamName}成績"
             )
         )
         transaction {
