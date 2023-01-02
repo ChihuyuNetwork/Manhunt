@@ -5,6 +5,7 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.StringArgument
 import dev.jorel.commandapi.executors.PlayerCommandExecutor
 import love.chihuyu.Plugin
+import love.chihuyu.Plugin.Companion.prefix
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.ManhuntMission
 import net.kyori.adventure.text.Component
@@ -15,9 +16,14 @@ object ManhuntStart {
         .withArguments(StringArgument("mission").replaceSuggestions(ArgumentSuggestions.strings(ManhuntMission.values().map { it.name })))
         .executesPlayer(
             PlayerCommandExecutor { sender, args ->
+                if (GameManager.started) {
+                    sender.sendMessage("$prefix ゲームは既に開始されています")
+                    return@PlayerCommandExecutor
+                }
+
                 val rule = ManhuntMission.valueOf(args[0] as String)
                 GameManager.prepare(sender, rule)
-                Plugin.plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが開始されました"))
+                Plugin.plugin.server.broadcast(Component.text("$prefix ゲームが開始されました"))
             }
         )
 }
