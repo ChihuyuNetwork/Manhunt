@@ -70,10 +70,6 @@ object GameManager {
             it.time = 1000
         }
 
-        plugin.server.onlinePlayers.forEach {
-            it.teleport(sender)
-        }
-
         var error = ""
         when {
             hunters().isEmpty() || runners().isEmpty() -> {
