@@ -194,5 +194,13 @@ object GameManager {
         StatisticsCollector.onGameEnd()
         StatisticsCollector.collect(startLocalDate)
         StatisticsCollector.clear()
+
+        try {
+            plugin.server.bossBars.forEachRemaining {
+                plugin.server.removeBossBar(it.key)
+            }
+        } catch (_: ConcurrentModificationException) {
+            plugin.logger.info("Bossbar can't removed.")
+        }
     }
 }
