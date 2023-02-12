@@ -21,5 +21,5 @@
 * `manhuntstatus[mhstats] <プレイヤー> {日付}`  
 `プレイヤー`のステータスを見る。`日付`を指定するとその日のデータも見れる
 
-* `/mhstats match <日付>`  
+* `/manhuntmatch[mhmatch] <日付>`  
 `日付`の試合のデータを見る
