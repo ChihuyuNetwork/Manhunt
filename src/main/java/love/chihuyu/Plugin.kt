@@ -2,7 +2,7 @@ package love.chihuyu
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import love.chihuyu.commands.CommandManhunt
-import love.chihuyu.commands.CommandManhuntMatches
+import love.chihuyu.commands.CommandManhuntMatch
 import love.chihuyu.commands.CommandManhuntStatus
 import love.chihuyu.database.Matches
 import love.chihuyu.database.NameRecord
@@ -89,7 +89,7 @@ class Plugin : JavaPlugin(), Listener {
         CommandManhunt.main.register()
         CommandManhuntStatus.main.register()
         CommandManhuntStatus.specifiedDate.register()
-        CommandManhuntMatches.main.register()
+        CommandManhuntMatch.main.register()
     }
 
     override fun onDisable() {
