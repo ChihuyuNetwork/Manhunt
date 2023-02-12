@@ -197,7 +197,7 @@ object GameManager {
 
         try {
             plugin.server.bossBars.forEachRemaining {
-                plugin.server.removeBossBar(it.key)
+                it.removeAll()
             }
         } catch (_: ConcurrentModificationException) {
             plugin.logger.info("Bossbar can't removed.")

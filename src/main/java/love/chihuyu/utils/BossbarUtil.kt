@@ -13,10 +13,11 @@ import org.bukkit.boss.BarStyle
 object BossbarUtil {
 
     fun updateBossbar(mission: ManhuntMission) {
+        val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
+
         plugin.server.onlinePlayers.forEach {
             val key = NamespacedKey(plugin, if (it.isRunner()) "manhunt-runner" else "manhunt-hunter")
-            val bossbar = plugin.server.getBossBar(key) ?: Bukkit.createBossBar(key, "残り時間", BarColor.RED, BarStyle.SOLID)
-            val remains = GameManager.endEpoch - EpochUtil.nowEpoch()
+            val bossbar = plugin.server.getBossBar(key) ?: Bukkit.createBossBar(key, "", BarColor.RED, BarStyle.SOLID)
             val msg = if (it.isHunter()) "ランナーを全員殺せ" else mission.msg
 
             bossbar.setTitle("$msg ≫ ${EpochUtil.formatTime(remains)}")
