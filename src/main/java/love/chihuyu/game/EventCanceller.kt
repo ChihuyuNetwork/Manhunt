@@ -67,6 +67,6 @@ object EventCanceller : Listener {
 
     @EventHandler
     fun onMove(e: PlayerMoveEvent) {
-        e.isCancelled = e.player in GameManager.frozen
+        e.isCancelled = e.player in GameManager.frozen && e.hasChangedPosition()
     }
 }
