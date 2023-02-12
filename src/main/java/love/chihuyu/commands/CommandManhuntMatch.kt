@@ -13,10 +13,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
-object CommandManhuntMatches {
+object CommandManhuntMatch {
 
-    val main = CommandAPICommand("manhuntmatches")
-        .withAliases("mhmathces")
+    val main = CommandAPICommand("manhuntmatch")
+        .withAliases("mhmatch")
         .withPermission(CommandPermission.OP)
         .withArguments(
             GreedyStringArgument("date").replaceSuggestions(
