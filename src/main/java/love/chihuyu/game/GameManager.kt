@@ -150,10 +150,11 @@ object GameManager {
         }
 
         hunters().forEach {
+            it.addPotionEffect(PotionEffect(PotionEffectType.SATURATION, 1200, 0, true, false, true))
             frozen.add(it)
         }
 
-        plugin.runTaskLater(600) {
+        plugin.runTaskLater(1200) {
             frozen.clear()
         }
 
