@@ -24,7 +24,7 @@ object BossbarUtil {
             bossbar.isVisible = true
             bossbar.progress = (remains * (1.0 / (GameManager.endEpoch - GameManager.startEpoch))).coerceIn(.0..1.0)
 
-            bossbar.addPlayer(it)
+            if (it !in bossbar.players) bossbar.addPlayer(it)
         }
     }
 }
