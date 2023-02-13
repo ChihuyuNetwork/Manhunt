@@ -11,6 +11,7 @@ import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.OfflinePlayer
 import org.bukkit.Sound
+import org.bukkit.boss.KeyedBossBar
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -196,9 +197,7 @@ object GameManager {
         StatisticsCollector.clear()
 
         try {
-            plugin.server.bossBars.forEachRemaining {
-                it.removeAll()
-            }
+            plugin.server.bossBars.forEachRemaining(KeyedBossBar::removeAll)
         } catch (_: ConcurrentModificationException) {
             plugin.logger.info("Bossbar can't removed.")
         }
