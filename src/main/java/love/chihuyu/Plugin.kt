@@ -226,7 +226,7 @@ class Plugin : JavaPlugin(), Listener {
         if (item.type != Material.COMPASS) return
 
         val nextPlayer = try {
-            val other = plugin.server.onlinePlayers.toList().minus(player)
+            val other = plugin.server.onlinePlayers.toList().minus(player).filter { it.gameMode == GameMode.SURVIVAL }
             other[(other.indexOf(compassTargets[player]) + (if (player.isSneaking) -1 else 1)) % other.size]
         } catch (e: Exception) {
             return
