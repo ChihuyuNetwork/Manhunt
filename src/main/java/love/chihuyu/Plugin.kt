@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
-import org.bukkit.scoreboard.Criteria
+import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -100,21 +100,12 @@ class Plugin : JavaPlugin(), Listener {
     fun onMine(e: BlockBreakEvent) {
         if (e.block.type in listOf(
                 Material.COAL_ORE,
-                Material.COPPER_ORE,
                 Material.DIAMOND_ORE,
                 Material.EMERALD_ORE,
                 Material.GOLD_ORE,
                 Material.IRON_ORE,
                 Material.LAPIS_ORE,
                 Material.REDSTONE_ORE,
-                Material.DEEPSLATE_COAL_ORE,
-                Material.DEEPSLATE_COPPER_ORE,
-                Material.DEEPSLATE_DIAMOND_ORE,
-                Material.DEEPSLATE_EMERALD_ORE,
-                Material.DEEPSLATE_GOLD_ORE,
-                Material.DEEPSLATE_IRON_ORE,
-                Material.DEEPSLATE_LAPIS_ORE,
-                Material.DEEPSLATE_REDSTONE_ORE,
                 Material.NETHER_GOLD_ORE,
                 Material.NETHER_QUARTZ_ORE,
             )
@@ -165,7 +156,7 @@ class Plugin : JavaPlugin(), Listener {
             GameManager.board.getTeam(Teams.HUNTER.teamName)?.addPlayer(player)
         }
 
-        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", Criteria.HEALTH, Component.text("${ChatColor.RED}♥"))
+        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", Criterias.HEALTH, Component.text("${ChatColor.RED}♥"))
         obj.displaySlot = DisplaySlot.BELOW_NAME
 
         player.scoreboard = GameManager.board

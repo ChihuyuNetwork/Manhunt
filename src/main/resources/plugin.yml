@@ -3,4 +3,4 @@ version: '1'
 main: love.chihuyu.Plugin
 authors: [ Hirosuke ]
 depend: [ CommandAPI ]
-api-version: 1.19
+api-version: 1.16

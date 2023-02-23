@@ -227,7 +227,7 @@ object StatisticsCollector : Listener {
         val block = e.block
         temporaryRecord[StatisticsType.BLOCKS_BROKEN]!![player] =
             (temporaryRecord[StatisticsType.BLOCKS_BROKEN]!![player] as? Int ?: 0).inc()
-        if (block.type == Material.COAL_ORE || block.type == Material.DEEPSLATE_COAL_ORE) {
+        if (block.type == Material.COAL_ORE) {
             temporaryRecord[StatisticsType.COALS_MINED]!![player] =
                 (temporaryRecord[StatisticsType.COALS_MINED]!![player] as? Int ?: 0).inc()
         }
@@ -264,7 +264,7 @@ object StatisticsCollector : Listener {
 
     @EventHandler
     fun onDeath(e: PlayerDeathEvent) {
-        val player = e.player
+        val player = e.entity as? Player ?: return
         if (player.isRunner()) {
             temporaryRecord[StatisticsType.ALIVE_TIME]!![player] = Instant.now().epochSecond - GameManager.startEpoch
         }
