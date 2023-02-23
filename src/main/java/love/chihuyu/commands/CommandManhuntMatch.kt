@@ -27,18 +27,22 @@ object CommandManhuntMatch {
                 }
             )
         )
-        .executesPlayer(PlayerCommandExecutor { sender, args ->
-            transaction {
-                val date = LocalDateTime.parse(args[0] as String)
-                val matchData = Matches.select { Matches.date eq date }.single()
+        .executesPlayer(
+            PlayerCommandExecutor { sender, args ->
+                transaction {
+                    val date = LocalDateTime.parse(args[0] as String)
+                    val matchData = Matches.select { Matches.date eq date }.single()
 
-                sender.sendMessage("""
+                    sender.sendMessage(
+                        """
                 ${ChatColor.GOLD}======${ChatColor.WHITE}${date.year}/${"%02d".format(date.month.value)}/${"%02d".format(date.dayOfMonth)} ${"%02d".format(date.hour)}:${"%02d".format(date.minute)}:${"%02d".format(date.second)}の情報${ChatColor.GOLD}======${ChatColor.WHITE}
                 試合時間: ${matchData[Matches.matchTime]}秒
                 勝利チーム: ${matchData[Matches.winnerTeam]}
                 シード: ${matchData[Matches.seed]}
                 ${ChatColor.GOLD}==================================
-                """.trimIndent())
+                        """.trimIndent()
+                    )
+                }
             }
-        })
+        )
 }

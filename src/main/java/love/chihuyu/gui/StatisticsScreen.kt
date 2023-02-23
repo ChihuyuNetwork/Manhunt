@@ -26,8 +26,10 @@ object StatisticsScreen : Listener {
             Teams.HUNTER -> "ハンター"
             Teams.RUNNER -> "ランナー"
         }
-        val playerName = transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
-            ?.get(NameRecord.ign) ?: "" }
+        val playerName = transaction {
+            NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+                ?.get(NameRecord.ign) ?: ""
+        }
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(
@@ -164,8 +166,10 @@ object StatisticsScreen : Listener {
             Teams.HUNTER -> "ハンター"
             Teams.RUNNER -> "ランナー"
         }
-        val playerName = transaction { NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
-            ?.get(NameRecord.ign) ?: "" }
+        val playerName = transaction {
+            NameRecord.select { NameRecord.uuid eq target.uniqueId }.singleOrNull()
+                ?.get(NameRecord.ign) ?: ""
+        }
         val inv = Bukkit.createInventory(
             player, 45,
             Component.text(

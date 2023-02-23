@@ -124,7 +124,6 @@ object StatisticsCollector : Listener {
             temporaryRecord[StatisticsType.PLAYERS_KILLED]!![player] = player.getStatistic(Statistic.PLAYER_KILLS)
             temporaryRecord[StatisticsType.TEAM]!![player] = if (player.isRunner()) Teams.RUNNER else Teams.HUNTER
             temporaryRecord[StatisticsType.TRAVELED]!![player] = travelingStatistics.sumOf { player.getStatistic(it).toLong() }
-
         }
     }
 
