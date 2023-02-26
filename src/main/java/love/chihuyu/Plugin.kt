@@ -1,6 +1,7 @@
 package love.chihuyu
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
+import dev.jorel.commandapi.CommandAPICommand
 import love.chihuyu.commands.CommandManhunt
 import love.chihuyu.commands.CommandManhuntMatch
 import love.chihuyu.commands.CommandManhuntStatus
@@ -59,11 +60,14 @@ class Plugin : JavaPlugin(), Listener {
     override fun onEnable() {
         StatisticsCollector.clear()
 
-        server.pluginManager.registerEvents(this, this)
-        server.pluginManager.registerEvents(MissionChecker, this)
-        server.pluginManager.registerEvents(EventCanceller, this)
-        server.pluginManager.registerEvents(StatisticsCollector, this)
-        server.pluginManager.registerEvents(StatisticsScreen, this)
+        listOf(
+            this,
+            MissionChecker,
+            EventCanceller,
+            StatisticsCollector,
+            StatisticsScreen,
+            VanillaTweaker
+        ).forEach { server.pluginManager.registerEvents(it, this) }
 
         compassTask = runTaskTimer(0, 0) {
             server.onlinePlayers.forEach {
@@ -86,10 +90,12 @@ class Plugin : JavaPlugin(), Listener {
             SchemaUtils.createMissingTablesAndColumns(NameRecord, withLogs = true)
         }
 
-        CommandManhunt.main.register()
-        CommandManhuntStatus.main.register()
-        CommandManhuntStatus.specifiedDate.register()
-        CommandManhuntMatch.main.register()
+        listOf(
+            CommandManhunt.main,
+            CommandManhuntStatus.main,
+            CommandManhuntStatus.specifiedDate,
+            CommandManhuntMatch.main
+        ).forEach(CommandAPICommand::register)
     }
 
     override fun onDisable() {
@@ -119,7 +125,6 @@ class Plugin : JavaPlugin(), Listener {
 
         ItemUtil.giveCompassIfNone(player)
         player.teleport(player.killer?.location ?: player.bedSpawnLocation ?: player.world.spawnLocation)
-        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
 
     @EventHandler
@@ -131,7 +136,6 @@ class Plugin : JavaPlugin(), Listener {
             player.gameMode = GameMode.SPECTATOR
         }
 
-        player.addPotionEffect(PotionEffect(PotionEffectType.NIGHT_VISION, Int.MAX_VALUE, 0, false, false, false))
     }
 
     @EventHandler
@@ -156,7 +160,11 @@ class Plugin : JavaPlugin(), Listener {
             GameManager.board.getTeam(Teams.HUNTER.teamName)?.addPlayer(player)
         }
 
-        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective("health", Criterias.HEALTH, Component.text("${ChatColor.RED}♥"))
+        val obj = GameManager.board.getObjective("health") ?: GameManager.board.registerNewObjective(
+            "health",
+            Criterias.HEALTH,
+            Component.text("${ChatColor.RED}♥")
+        )
         obj.displaySlot = DisplaySlot.BELOW_NAME
 
         player.scoreboard = GameManager.board
@@ -190,11 +198,13 @@ class Plugin : JavaPlugin(), Listener {
             } else {
                 e.recipients.removeIf { it.gameMode != GameMode.SPECTATOR }
             }
-            e.format = "${if (isGlobal) ChatColor.DARK_PURPLE else ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
+            e.format =
+                "${if (isGlobal) ChatColor.DARK_PURPLE else ChatColor.GRAY}[SPEC]${ChatColor.RESET} ${player.name}: ${e.message}"
             return
         }
 
-        val teamColor = if (isGlobal) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
+        val teamColor =
+            if (isGlobal) ChatColor.DARK_PURPLE else GameManager.board.getPlayerTeam(player)?.color ?: ChatColor.AQUA
         val teamPrefix =
             when (player) {
                 in hunters() -> "$teamColor[HUNT]${ChatColor.RESET}"
