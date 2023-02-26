@@ -32,17 +32,17 @@ object EventCanceller : Listener {
 
     @EventHandler
     fun onInteract(e: PlayerInteractEvent) {
-        e.isCancelled = !GameManager.started && e.player.gameMode != GameMode.CREATIVE
+        e.isCancelled = (!GameManager.started && e.player.gameMode != GameMode.CREATIVE) || e.player in GameManager.frozen
     }
 
     @EventHandler
     fun onEntityInteract(e: PlayerInteractEntityEvent) {
-        e.isCancelled = !GameManager.started && e.player.gameMode != GameMode.CREATIVE
+        e.isCancelled = (!GameManager.started && e.player.gameMode != GameMode.CREATIVE) || e.player in GameManager.frozen
     }
 
     @EventHandler
     fun onBlockDamage(e: BlockDamageEvent) {
-        e.isCancelled = !GameManager.started && e.player.gameMode != GameMode.CREATIVE
+        e.isCancelled = (!GameManager.started && e.player.gameMode != GameMode.CREATIVE) || e.player in GameManager.frozen
     }
 
     @EventHandler
@@ -67,6 +67,6 @@ object EventCanceller : Listener {
 
     @EventHandler
     fun onMove(e: PlayerMoveEvent) {
-        e.isCancelled = e.player in GameManager.frozen && e.hasChangedPosition()
+        e.isCancelled = e.player in GameManager.frozen && e.hasExplicitlyChangedBlock()
     }
 }
