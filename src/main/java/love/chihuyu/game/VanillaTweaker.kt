@@ -46,7 +46,7 @@ object VanillaTweaker: Listener {
             { ItemUtil.create(Material.GRAVEL, amount = Random.nextInt(8, 17)) },
             { ItemUtil.create(Material.LEATHER, amount = Random.nextInt(4, 11)) },
             { ItemUtil.create(Material.NETHER_BRICK, amount = Random.nextInt(4, 17)) },
-            { ItemUtil.create(Material.OBSIDIAN, amount = Random.nextInt(1, 3)) },
+            { ItemUtil.create(Material.OBSIDIAN, amount = 1) },
             { ItemUtil.create(Material.CRYING_OBSIDIAN, amount = Random.nextInt(1, 4)) },
             { ItemUtil.create(Material.SOUL_SAND, amount = Random.nextInt(4, 17)) })
         )
