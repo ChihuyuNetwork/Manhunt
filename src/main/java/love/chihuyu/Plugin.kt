@@ -96,6 +96,8 @@ class Plugin : JavaPlugin(), Listener {
             CommandManhuntStatus.specifiedDate,
             CommandManhuntMatch.main
         ).forEach(CommandAPICommand::register)
+
+        RecipeManager.add()
     }
 
     override fun onDisable() {
