@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
     id "org.jlleitschuh.gradle.ktlint" version '10.3.0'
 }
 
@@ -16,6 +16,7 @@ repositories {
 dependencies {
     compileOnly 'org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT'
     compileOnly 'dev.jorel:commandapi-core:8.7.5'
+    implementation 'dev.jorel:commandapi-kotlin:8.7.5'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.exposed:exposed-core:0.40.1'
     implementation 'org.jetbrains.exposed:exposed-dao:0.40.1'
@@ -32,6 +33,18 @@ ktlint {
 def targetJavaVersion = 17
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 jar {
@@ -57,17 +70,5 @@ processResources {
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
-    }
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }

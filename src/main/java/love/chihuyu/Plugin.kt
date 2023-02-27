@@ -1,10 +1,12 @@
 package love.chihuyu
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import dev.jorel.commandapi.CommandAPICommand
-import love.chihuyu.commands.CommandManhunt
-import love.chihuyu.commands.CommandManhuntMatch
-import love.chihuyu.commands.CommandManhuntStatus
+import dev.jorel.commandapi.CommandPermission
+import dev.jorel.commandapi.arguments.*
+import dev.jorel.commandapi.kotlindsl.argument
+import dev.jorel.commandapi.kotlindsl.commandAPICommand
+import dev.jorel.commandapi.kotlindsl.playerExecutor
+import dev.jorel.commandapi.kotlindsl.subcommand
 import love.chihuyu.database.Matches
 import love.chihuyu.database.NameRecord
 import love.chihuyu.database.Users
@@ -20,6 +22,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.event.EventHandler
@@ -42,6 +45,9 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.time.Instant
+import java.time.LocalDateTime
+import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class Plugin : JavaPlugin(), Listener {
 
@@ -59,6 +65,7 @@ class Plugin : JavaPlugin(), Listener {
 
     override fun onEnable() {
         StatisticsCollector.clear()
+        initCommands()
 
         listOf(
             this,
@@ -90,18 +97,108 @@ class Plugin : JavaPlugin(), Listener {
             SchemaUtils.createMissingTablesAndColumns(NameRecord, withLogs = true)
         }
 
-        listOf(
-            CommandManhunt.main,
-            CommandManhuntStatus.main,
-            CommandManhuntStatus.specifiedDate,
-            CommandManhuntMatch.main
-        ).forEach(CommandAPICommand::register)
-
         RecipeManager.add()
     }
 
     override fun onDisable() {
         compassTask.cancel()
+    }
+
+    private fun initCommands() {
+        commandAPICommand("manhunt") {
+            withAliases("mh")
+            withPermission(CommandPermission.OP)
+            subcommand("end") {
+                argument(BooleanArgument("目標を達成したか"))
+                playerExecutor { _, args ->
+                    if (!GameManager.started) return@playerExecutor
+                    GameManager.end(args[0] as Boolean)
+                    plugin.server.broadcast(Component.text("${Plugin.prefix} ゲームが終了されました"))
+                }
+            }
+            subcommand("start") {
+                argument(StringArgument("目標").replaceSuggestions(ArgumentSuggestions.strings { ManhuntMission.values().map { it.name }.toTypedArray() }))
+                playerExecutor { player, args ->
+                    if (GameManager.started) {
+                        player.sendMessage("$prefix ゲームは既に開始されています")
+                        return@playerExecutor
+                    }
+
+                    val rule = ManhuntMission.valueOf(args[0] as String)
+                    GameManager.prepare(player, rule)
+                    plugin.server.broadcast(Component.text("$prefix ゲームが開始されました"))
+                }
+            }
+            subcommand("group") {
+                argument(IntegerArgument("人数"))
+                playerExecutor { player, args ->
+                    GameManager.grouping(args[0] as Int)
+                    player.sendMessage("$prefix ランナーとハンターをグルーピングしました")
+                }
+            }
+        }
+
+        fun getPlayerName(uuid: UUID): String = transaction {
+            (NameRecord.select { NameRecord.uuid eq uuid }.singleOrNull() ?: return@transaction "")[NameRecord.ign]
+        }
+
+        fun playerArgSuggest() = CompletableFuture.supplyAsync {
+            transaction { Users.selectAll().map { getPlayerName(it[Users.uuid]) }.toSet().toTypedArray() }
+        }.get()
+
+        commandAPICommand("manhuntstatstics") {
+            withAliases("mhstats")
+            argument(OfflinePlayerArgument("プレイヤー").replaceSuggestions(
+                ArgumentSuggestions.strings { playerArgSuggest() }
+            ))
+            playerExecutor { player, args ->
+                StatisticsScreen.openStatistics(player, args[0] as OfflinePlayer, Teams.HUNTER)
+            }
+        }
+
+        commandAPICommand("manhuntstatstics") {
+            withAliases("mhstats")
+            argument(OfflinePlayerArgument("プレイヤー").replaceSuggestions(
+                ArgumentSuggestions.strings { playerArgSuggest() }
+            ))
+            argument(GreedyStringArgument("日付").replaceSuggestions(ArgumentSuggestions.strings { info ->
+                CompletableFuture.supplyAsync {
+                    transaction { Users.select { Users.uuid eq (info.previousArgs[0] as OfflinePlayer).uniqueId }.map { "${it[Users.date]}" }.toTypedArray() }
+                }.get()
+            }))
+            playerExecutor { player, args ->
+                transaction {
+                    val date = LocalDateTime.parse(args[1] as String)
+                    val selector = Users.select { (Users.uuid eq (args[0] as OfflinePlayer).uniqueId) and (Users.date eq date) }.single()
+                    StatisticsScreen.openStatistics(player, args[0] as OfflinePlayer, selector[Users.team], date)
+                }
+            }
+        }
+
+        commandAPICommand("manhuntmatch") {
+            withAliases("mhmatch")
+            argument(GreedyStringArgument("日付").replaceSuggestions(ArgumentSuggestions.stringsAsync {
+                CompletableFuture.supplyAsync {
+                    transaction { Matches.selectAll().map { "${it[Matches.date]}" }.toTypedArray() }
+                }
+            }))
+            playerExecutor { player, anies ->
+                transaction {
+                    val date = LocalDateTime.parse(anies[0] as String)
+                    val matchData = Matches.select { Matches.date eq date }.single()
+
+                    player.sendMessage(
+                        """
+                ${ChatColor.GOLD}======${ChatColor.WHITE}${date.year}/${"%02d".format(date.month.value)}/${"%02d".format(date.dayOfMonth)} ${"%02d".format(date.hour)}:${"%02d".format(date.minute)}:${"%02d".format(date.second)}の情報${ChatColor.GOLD}======${ChatColor.WHITE}
+                試合時間: ${matchData[Matches.matchTime]}秒
+                勝利チーム: ${matchData[Matches.winnerTeam]}
+                シード: ${matchData[Matches.seed]}
+                ${ChatColor.GOLD}==================================
+                        """.trimIndent()
+                    )
+                }
+            }
+        }
     }
 
     @EventHandler
