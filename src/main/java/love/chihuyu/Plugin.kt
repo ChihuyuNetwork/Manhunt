@@ -149,9 +149,11 @@ class Plugin : JavaPlugin(), Listener {
 
         commandAPICommand("manhuntstatstics") {
             withAliases("mhstats")
-            argument(OfflinePlayerArgument("プレイヤー").replaceSuggestions(
-                ArgumentSuggestions.strings { playerArgSuggest() }
-            ))
+            argument(
+                OfflinePlayerArgument("プレイヤー").replaceSuggestions(
+                    ArgumentSuggestions.strings { playerArgSuggest() }
+                )
+            )
             playerExecutor { player, args ->
                 StatisticsScreen.openStatistics(player, args[0] as OfflinePlayer, Teams.HUNTER)
             }
@@ -159,14 +161,20 @@ class Plugin : JavaPlugin(), Listener {
 
         commandAPICommand("manhuntstatstics") {
             withAliases("mhstats")
-            argument(OfflinePlayerArgument("プレイヤー").replaceSuggestions(
-                ArgumentSuggestions.strings { playerArgSuggest() }
-            ))
-            argument(GreedyStringArgument("日付").replaceSuggestions(ArgumentSuggestions.strings { info ->
-                CompletableFuture.supplyAsync {
-                    transaction { Users.select { Users.uuid eq (info.previousArgs[0] as OfflinePlayer).uniqueId }.map { "${it[Users.date]}" }.toTypedArray() }
-                }.get()
-            }))
+            argument(
+                OfflinePlayerArgument("プレイヤー").replaceSuggestions(
+                    ArgumentSuggestions.strings { playerArgSuggest() }
+                )
+            )
+            argument(
+                GreedyStringArgument("日付").replaceSuggestions(
+                    ArgumentSuggestions.strings { info ->
+                        CompletableFuture.supplyAsync {
+                            transaction { Users.select { Users.uuid eq (info.previousArgs[0] as OfflinePlayer).uniqueId }.map { "${it[Users.date]}" }.toTypedArray() }
+                        }.get()
+                    }
+                )
+            )
             playerExecutor { player, args ->
                 transaction {
                     val date = LocalDateTime.parse(args[1] as String)
@@ -178,11 +186,15 @@ class Plugin : JavaPlugin(), Listener {
 
         commandAPICommand("manhuntmatch") {
             withAliases("mhmatch")
-            argument(GreedyStringArgument("日付").replaceSuggestions(ArgumentSuggestions.stringsAsync {
-                CompletableFuture.supplyAsync {
-                    transaction { Matches.selectAll().map { "${it[Matches.date]}" }.toTypedArray() }
-                }
-            }))
+            argument(
+                GreedyStringArgument("日付").replaceSuggestions(
+                    ArgumentSuggestions.stringsAsync {
+                        CompletableFuture.supplyAsync {
+                            transaction { Matches.selectAll().map { "${it[Matches.date]}" }.toTypedArray() }
+                        }
+                    }
+                )
+            )
             playerExecutor { player, anies ->
                 transaction {
                     val date = LocalDateTime.parse(anies[0] as String)
@@ -246,7 +258,6 @@ class Plugin : JavaPlugin(), Listener {
         if (player in runners()) {
             player.gameMode = GameMode.SPECTATOR
         }
-
     }
 
     @EventHandler

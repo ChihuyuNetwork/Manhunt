@@ -18,37 +18,50 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import kotlin.random.Random
 
-object VanillaTweaker: Listener {
+object VanillaTweaker : Listener {
 
     class CustomBartarItem(val weight: Int, val items: List<() -> ItemStack>)
 
     private val bartarList = listOf(
-        CustomBartarItem(5, listOf
+        CustomBartarItem(
+            5,
+            listOf
             { ItemUtil.createEnchantBook(storedEnchants = mapOf(Pair(Enchantment.SOUL_SPEED, Random.nextInt(1, 4))), amount = 1) }
         ),
-        CustomBartarItem(8, listOf
+        CustomBartarItem(
+            8,
+            listOf
             { ItemUtil.create(Material.IRON_BOOTS, enchantments = mapOf(Pair(Enchantment.SOUL_SPEED, Random.nextInt(1, 4))), amount = 1) }
         ),
-        CustomBartarItem(10, listOf(
-            { ItemUtil.create(Material.IRON_NUGGET, amount = Random.nextInt(9, 37)) },
-            { ItemUtil.createPotion("${ChatColor.RESET}耐火のポーション", customEffects = listOf(PotionEffect(PotionEffectType.FIRE_RESISTANCE, 180 * 20, 0)), amount = 1, color = Color.ORANGE) },
-            { ItemUtil.createSplashPotion("${ChatColor.RESET}耐火のスプラッシュポーション", customEffects = listOf(PotionEffect(PotionEffectType.FIRE_RESISTANCE, 180 * 20, 0)), amount = 1, color = Color.ORANGE) })
+        CustomBartarItem(
+            10,
+            listOf(
+                { ItemUtil.create(Material.IRON_NUGGET, amount = Random.nextInt(9, 37)) },
+                { ItemUtil.createPotion("${ChatColor.RESET}耐火のポーション", customEffects = listOf(PotionEffect(PotionEffectType.FIRE_RESISTANCE, 180 * 20, 0)), amount = 1, color = Color.ORANGE) },
+                { ItemUtil.createSplashPotion("${ChatColor.RESET}耐火のスプラッシュポーション", customEffects = listOf(PotionEffect(PotionEffectType.FIRE_RESISTANCE, 180 * 20, 0)), amount = 1, color = Color.ORANGE) }
+            )
         ),
-        CustomBartarItem(20, listOf(
-            { ItemUtil.create(Material.QUARTZ, amount = Random.nextInt(8, 17)) },
-            { ItemUtil.create(Material.GLOWSTONE_DUST, amount = Random.nextInt(5, 13)) },
-            { ItemUtil.create(Material.MAGMA_CREAM, amount = Random.nextInt(2, 7)) },
-            { ItemUtil.create(Material.ENDER_PEARL, amount = Random.nextInt(4, 9)) },
-            { ItemUtil.create(Material.STRING, amount = Random.nextInt(8, 25)) })
+        CustomBartarItem(
+            20,
+            listOf(
+                { ItemUtil.create(Material.QUARTZ, amount = Random.nextInt(8, 17)) },
+                { ItemUtil.create(Material.GLOWSTONE_DUST, amount = Random.nextInt(5, 13)) },
+                { ItemUtil.create(Material.MAGMA_CREAM, amount = Random.nextInt(2, 7)) },
+                { ItemUtil.create(Material.ENDER_PEARL, amount = Random.nextInt(4, 9)) },
+                { ItemUtil.create(Material.STRING, amount = Random.nextInt(8, 25)) }
+            )
         ),
-        CustomBartarItem(40, listOf(
-            { ItemUtil.create(Material.FIRE_CHARGE, amount = Random.nextInt(1, 6)) },
-            { ItemUtil.create(Material.GRAVEL, amount = Random.nextInt(8, 17)) },
-            { ItemUtil.create(Material.LEATHER, amount = Random.nextInt(4, 11)) },
-            { ItemUtil.create(Material.NETHER_BRICK, amount = Random.nextInt(4, 17)) },
-            { ItemUtil.create(Material.OBSIDIAN, amount = 1) },
-            { ItemUtil.create(Material.CRYING_OBSIDIAN, amount = Random.nextInt(1, 4)) },
-            { ItemUtil.create(Material.SOUL_SAND, amount = Random.nextInt(4, 17)) })
+        CustomBartarItem(
+            40,
+            listOf(
+                { ItemUtil.create(Material.FIRE_CHARGE, amount = Random.nextInt(1, 6)) },
+                { ItemUtil.create(Material.GRAVEL, amount = Random.nextInt(8, 17)) },
+                { ItemUtil.create(Material.LEATHER, amount = Random.nextInt(4, 11)) },
+                { ItemUtil.create(Material.NETHER_BRICK, amount = Random.nextInt(4, 17)) },
+                { ItemUtil.create(Material.OBSIDIAN, amount = 1) },
+                { ItemUtil.create(Material.CRYING_OBSIDIAN, amount = Random.nextInt(1, 4)) },
+                { ItemUtil.create(Material.SOUL_SAND, amount = Random.nextInt(4, 17)) }
+            )
         )
     ).flatMap { customBartarItem ->
         val list = mutableListOf<() -> ItemStack>()
