@@ -35,6 +35,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
@@ -199,6 +200,17 @@ class Plugin : JavaPlugin(), Listener {
                 }
             }
         }
+
+        commandAPICommand("toggleglobalchat") {
+            withAliases("togglegc")
+            playerExecutor { player, anies ->
+                if (player.hasMetadata("mh_globalchat")) {
+                    player.removeMetadata("mh_globalchat", this@Plugin)
+                } else {
+                    player.setMetadata("mh_globalchat", FixedMetadataValue(this@Plugin, true))
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -289,7 +301,9 @@ class Plugin : JavaPlugin(), Listener {
     @EventHandler
     fun onChat(e: AsyncPlayerChatEvent) {
         val player = e.player
-        val isGlobal = e.message.startsWith('!')
+        val isGlobal = e.message.startsWith('!') || if (player.hasMetadata("mh_globalchat")) {
+            player.getMetadata("mh_globalchat")[0].asBoolean()
+        } else false
 
         if (player.gameMode == GameMode.SPECTATOR) {
             if (isGlobal) {
