@@ -1,7 +1,6 @@
 package love.chihuyu.listener
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
-import love.chihuyu.database.NameRecord
 import love.chihuyu.game.GameManager
 import love.chihuyu.game.Teams
 import love.chihuyu.utils.ItemUtil
@@ -21,8 +20,6 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 
 object GameListener: Listener {
@@ -65,20 +62,6 @@ object GameListener: Listener {
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.player
-
-        transaction {
-            addLogger(StdOutSqlLogger)
-            if (NameRecord.select { NameRecord.uuid eq player.uniqueId }.count() == 0L) {
-                NameRecord.insert {
-                    it[this.uuid] = player.uniqueId
-                    it[this.ign] = player.name
-                }
-            } else {
-                NameRecord.update({ NameRecord.uuid eq player.uniqueId }) {
-                    it[this.ign] = player.name
-                }
-            }
-        }
 
         if (player !in GameManager.hunters() && player !in GameManager.runners()) {
             GameManager.board.getTeam(Teams.HUNTER.teamName)?.addPlayer(player)

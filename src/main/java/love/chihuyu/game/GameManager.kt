@@ -2,7 +2,6 @@ package love.chihuyu.game
 
 import love.chihuyu.Plugin.Companion.plugin
 import love.chihuyu.Plugin.Companion.prefix
-import love.chihuyu.database.Matches
 import love.chihuyu.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -16,14 +15,8 @@ import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.scoreboard.Team
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import kotlin.math.ceil
 
 object GameManager {
@@ -35,8 +28,8 @@ object GameManager {
     fun runners() = plugin.server.onlinePlayers.filter { board.getPlayerTeam(it)?.name == Teams.RUNNER.teamName }.toSet()
 
     var started: Boolean = false
-    lateinit var taskTickGame: BukkitTask
-    lateinit var taskTickEnd: BukkitTask
+    private lateinit var taskTickGame: BukkitTask
+    private lateinit var taskTickEnd: BukkitTask
     lateinit var mission: ManhuntMission
 
     var endEpoch = EpochUtil.nowEpoch()
@@ -157,12 +150,9 @@ object GameManager {
         plugin.runTaskLater(1200) {
             frozen.clear()
         }
-
-        StatisticsCollector.onGameStart()
     }
 
     internal fun end(missioned: Boolean) {
-        val startLocalDate = LocalDateTime.ofEpochSecond(startEpoch, 0, ZoneId.of("Asia/Tokyo").rules.getOffset(Instant.ofEpochSecond(startEpoch)))
         started = false
 
         taskTickGame.cancel()
@@ -179,20 +169,5 @@ object GameManager {
                 )
             )
         }
-
-        transaction {
-            addLogger(StdOutSqlLogger)
-            Matches.insert {
-                it[this.date] = startLocalDate
-                it[this.seed] = plugin.server.getWorld("world")?.seed ?: 0L
-                it[this.matchTime] = Instant.now().epochSecond - startEpoch
-                it[this.winnerTeam] = if (missioned) Teams.RUNNER else Teams.HUNTER
-                it[this.mission] = this@GameManager.mission
-            }
-        }
-
-        StatisticsCollector.onGameEnd()
-        StatisticsCollector.collect(startLocalDate)
-        StatisticsCollector.clear()
     }
 }
