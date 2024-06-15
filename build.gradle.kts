@@ -33,11 +33,6 @@ dependencies {
     compileOnly("dev.jorel:commandapi-bukkit-core:9.0.3")
     compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.0.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-dao:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
-    implementation("mysql:mysql-connector-java:8.0.30")
 }
 
 ktlint {
@@ -119,46 +114,6 @@ task("setup") {
                         ${project.name}Plugin = this
                     }
                 }
-            """.trimIndent()
-        )
-    }
-}
-
-task("generateActionsFile") {
-    doFirst {
-        val actionFile = projectDir.resolve(".github/workflows").apply(File::mkdirs)
-        actionFile.resolve("deploy.yml").writeText(
-            """
-                name: Deploy
-                on:
-                  workflow_dispatch:
-                  push:
-                    branches:
-                      - 'master'
-                    paths-ignore:
-                      - "**.md"
-                jobs:
-                  build:
-                    runs-on: ubuntu-latest
-                    permissions:
-                      contents: read
-                    steps:
-                      - uses: actions/checkout@v3
-                      - name: Set up JDK 17
-                        uses: actions/setup-java@v3
-                        with:
-                          java-version: '17'
-                          distribution: 'temurin'
-                      - name: Grant execute permission for gradlew
-                        run: chmod +x gradlew
-                      - name: Prepare gradle.properties
-                        run: |
-                          mkdir -p ${ "\$HOME" }/.gradle
-                          echo ${ "repoUsername=\${{ secrets.DEPLOY_USERNAME }} "} >> ${ "\$HOME" }/.gradle/gradle.properties
-                          echo ${ "repoPassword=\${{ secrets.DEPLOY_PASSWORD }}"} >> ${ "\$HOME" }/.gradle/gradle.properties
-                      - name: Deploy
-                        run: |
-                          ./gradlew clean test publish
             """.trimIndent()
         )
     }
