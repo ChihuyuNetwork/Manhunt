@@ -7,11 +7,11 @@ import org.bukkit.entity.Player
 object TeamUtil {
 
     fun Player.isRunner(): Boolean {
-        return this in GameManager.runners()
+        return getTeam() == Teams.RUNNER
     }
 
     fun Player.isHunter(): Boolean {
-        return this in GameManager.hunters()
+        return getTeam() == Teams.HUNTER
     }
 
     fun Player.getTeam(): Teams {
