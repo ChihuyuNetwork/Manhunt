@@ -38,7 +38,7 @@ object TeamChatter: Listener {
                 else -> "$teamColor[NULL]${ChatColor.RESET}"
             }
 
-        e.recipients.removeIf { !isGlobal && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) }
+        e.recipients.removeIf { !isGlobal && !(GameManager.board.getPlayerTeam(player)?.hasPlayer(it) ?: true) && it.gameMode != GameMode.SPECTATOR }
 
         if (isGlobal) e.message = e.message.substringAfter('!')
         e.format = "$teamPrefix ${player.name}: ${e.message}"
