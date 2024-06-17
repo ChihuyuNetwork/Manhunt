@@ -1,5 +1,6 @@
 package love.chihuyu
 
+import dev.jorel.commandapi.CommandPermission
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.kotlindsl.*
 import love.chihuyu.game.*
@@ -8,13 +9,12 @@ import love.chihuyu.listener.GameListener
 import love.chihuyu.listener.TeamChatter
 import love.chihuyu.utils.runTaskTimer
 import net.kyori.adventure.text.Component
-import org.bukkit.ChatColor
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
-import java.io.File
 
 class Plugin : JavaPlugin(), Listener {
 
@@ -22,7 +22,7 @@ class Plugin : JavaPlugin(), Listener {
         lateinit var plugin: JavaPlugin
         lateinit var compassTask: BukkitTask
         var cooltimed = mutableSetOf<Player>()
-        val prefix = "${ChatColor.GOLD}[MH]${ChatColor.RESET}"
+        val prefix = "${NamedTextColor.GOLD}[MH]${NamedTextColor.WHITE}"
         val compassTargets = mutableMapOf<Player, Player>()
     }
     
@@ -45,14 +45,8 @@ class Plugin : JavaPlugin(), Listener {
         compassTask = runTaskTimer(0, 0) {
             server.onlinePlayers.forEach {
                 val target = compassTargets[it]
-                it.sendActionBar(Component.text("${ChatColor.WHITE}追跡中 ≫ " + target?.name))
+                it.sendActionBar(Component.text("${NamedTextColor.WHITE}追跡中 ≫ " + target?.name))
             }
-        }
-
-        val dbFile = File("${plugin.dataFolder}/statistics.db")
-        if (!dbFile.exists()) {
-            File("${plugin.dataFolder}").mkdir()
-            dbFile.createNewFile()
         }
 
         RecipeManager.add()
@@ -63,9 +57,11 @@ class Plugin : JavaPlugin(), Listener {
     }
 
     private fun initCommands() {
-        commandAPICommand("manhunt", { sender -> sender.isOp }) {
+        commandAPICommand("manhunt") {
+            permission = CommandPermission.OP
+            withAliases("mh")
             subcommand("end") {
-                booleanArgument("目標を達成したか")
+                booleanArgument("isCompletedObjective")
                 playerExecutor { _, args ->
                     if (!GameManager.started) return@playerExecutor
                     GameManager.end(args[0] as Boolean)
@@ -73,7 +69,7 @@ class Plugin : JavaPlugin(), Listener {
                 }
             }
             subcommand("start") {
-                stringArgument("目標") {
+                stringArgument("objective") {
                     replaceSuggestions(ArgumentSuggestions.strings { ManhuntMission.values().map { it.name }.toTypedArray() })
                 }
                 playerExecutor { player, args ->
