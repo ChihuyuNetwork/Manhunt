@@ -22,5 +22,13 @@ object RecipeManager {
             )
                 .setIngredient('W', Material.WARPED_PLANKS)
         )
+
+        plugin.server.addRecipe(
+            ShapedRecipe(NamespacedKey.fromString("enchanted_golden_apple")!!, ItemUtil.create(Material.ENCHANTED_GOLDEN_APPLE)).shape(
+                "GGG", "GAG", "GGG"
+            )
+                .setIngredient('G', Material.GOLD_BLOCK)
+                .setIngredient('A', Material.APPLE)
+        )
     }
 }
