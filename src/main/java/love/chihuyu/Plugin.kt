@@ -25,7 +25,7 @@ class Plugin : JavaPlugin(), Listener {
         val prefix = "${NamedTextColor.GOLD}[MH]${NamedTextColor.WHITE}"
         val compassTargets = mutableMapOf<Player, Player>()
     }
-    
+
     init {
         plugin = this
     }

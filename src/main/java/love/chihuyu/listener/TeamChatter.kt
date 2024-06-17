@@ -7,14 +7,16 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 
-object TeamChatter: Listener {
+object TeamChatter : Listener {
 
     @EventHandler
     fun onChat(e: AsyncPlayerChatEvent) {
         val player = e.player
         val isGlobal = e.message.startsWith('!') || if (player.hasMetadata("mh_globalchat")) {
             player.getMetadata("mh_globalchat")[0].asBoolean()
-        } else false
+        } else {
+            false
+        }
 
         if (!e.isAsynchronous) return
 

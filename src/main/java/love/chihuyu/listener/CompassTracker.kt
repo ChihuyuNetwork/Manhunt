@@ -11,7 +11,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 
-object CompassTracker: Listener {
+object CompassTracker : Listener {
 
     @EventHandler
     fun compassTracker(e: PlayerInteractEvent) {

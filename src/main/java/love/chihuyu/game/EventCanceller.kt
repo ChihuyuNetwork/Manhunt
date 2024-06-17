@@ -21,13 +21,15 @@ object EventCanceller : Listener {
     fun onDamage(e: EntityDamageEvent) {
         e.isCancelled =
             !GameManager.started &&
-            if (e is EntityDamageByEntityEvent)
-                if (e.damager is Player)
+            if (e is EntityDamageByEntityEvent) {
+                if (e.damager is Player) {
                     (e.damager as Player).gameMode != GameMode.CREATIVE
-                else
+                } else {
                     true
-            else
+                }
+            } else {
                 e.cause != EntityDamageEvent.DamageCause.VOID
+            }
     }
 
     @EventHandler

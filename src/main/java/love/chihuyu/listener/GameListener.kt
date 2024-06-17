@@ -22,7 +22,7 @@ import org.bukkit.scoreboard.Criterias
 import org.bukkit.scoreboard.DisplaySlot
 import java.time.Instant
 
-object GameListener: Listener {
+object GameListener : Listener {
 
     @EventHandler
     fun onMine(e: BlockBreakEvent) {
@@ -35,10 +35,11 @@ object GameListener: Listener {
                 Material.LAPIS_ORE,
                 Material.REDSTONE_ORE,
                 Material.NETHER_GOLD_ORE,
-                Material.NETHER_QUARTZ_ORE,
+                Material.NETHER_QUARTZ_ORE
             )
-        )
+        ) {
             e.expToDrop += 24
+        }
     }
 
     @EventHandler

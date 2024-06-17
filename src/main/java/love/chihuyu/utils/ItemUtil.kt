@@ -27,7 +27,7 @@ object ItemUtil {
         unbreakable: Boolean? = null,
         customEffects: List<PotionEffect>? = null,
         color: Color? = null,
-        basePotionData: PotionData? = null,
+        basePotionData: PotionData? = null
     ): ItemStack {
         val item = create(
             Material.SPLASH_POTION, name, localizedName, amount, customModelData, lore, attributeModifier, enchantments, flags, unbreakable
@@ -52,7 +52,7 @@ object ItemUtil {
         unbreakable: Boolean? = null,
         customEffects: List<PotionEffect>? = null,
         color: Color? = null,
-        basePotionData: PotionData? = null,
+        basePotionData: PotionData? = null
     ): ItemStack {
         val item = create(
             Material.POTION, name, localizedName, amount, customModelData, lore, attributeModifier, enchantments, flags, unbreakable
@@ -75,7 +75,7 @@ object ItemUtil {
         enchantments: Map<Enchantment, Int>? = null,
         flags: List<ItemFlag>? = null,
         unbreakable: Boolean? = null,
-        storedEnchants: Map<Enchantment, Int>? = null,
+        storedEnchants: Map<Enchantment, Int>? = null
     ): ItemStack {
         val item = create(
             Material.ENCHANTED_BOOK, name, localizedName, amount, customModelData, lore, attributeModifier, enchantments, flags, unbreakable
@@ -96,7 +96,7 @@ object ItemUtil {
         attributeModifier: Map<Attribute, AttributeModifier>? = null,
         enchantments: Map<Enchantment, Int>? = null,
         flags: List<ItemFlag>? = null,
-        unbreakable: Boolean? = null,
+        unbreakable: Boolean? = null
     ): ItemStack {
         val item = ItemStack(material)
         if (amount != null) item.amount = amount
