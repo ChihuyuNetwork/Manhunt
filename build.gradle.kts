@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.jlleitschuh.gradle.ktlint") version "11.4.0"
     id("xyz.jpenilla.run-paper") version "2.1.0"
@@ -18,7 +18,6 @@ repositories {
     mavenCentral()
     maven("https://repo.codemc.org/repository/maven-public/")
 //    maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://repo.hirosuke.me/snapshots/")
     maven("https://repo.purpurmc.org/snapshots")
 }
 
@@ -29,10 +28,10 @@ repositories {
  */
 
 dependencies {
-    compileOnly("org.purpurmc.purpur:purpur-api:1.20.1-R0.1-SNAPSHOT")
-    compileOnly("dev.jorel:commandapi-bukkit-core:9.0.3")
-    compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.0.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compileOnly("org.purpurmc.purpur:purpur-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("dev.jorel:commandapi-bukkit-core:9.5.0")
+    compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.5.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 ktlint {
@@ -69,52 +68,6 @@ tasks {
     }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "repo"
-            credentials(PasswordCredentials::class)
-            url = uri(
-                if (project.version.toString().endsWith("SNAPSHOT"))
-                    "https://repo.hirosuke.me/snapshots/"
-                else
-                    "https://repo.hirosuke.me/releases/"
-            )
-        }
-    }
-
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
-}
-
 kotlin {
     jvmToolchain(17)
-}
-
-task("setup") {
-    doFirst {
-        val projectDir = project.projectDir
-        projectDir.resolve("renovate.json").deleteOnExit()
-        val srcDir = projectDir.resolve("src/main/kotlin/love/chihuyu/${project.name.lowercase()}").apply(File::mkdirs)
-        srcDir.resolve("${project.name}Plugin.kt").writeText(
-            """
-                package love.chihuyu.${project.name.lowercase()}
-                
-                import org.bukkit.plugin.java.JavaPlugin
-    
-                class ${project.name}Plugin: JavaPlugin() {
-                    companion object {
-                        lateinit var ${project.name}Plugin: JavaPlugin
-                    }
-                
-                    init {
-                        ${project.name}Plugin = this
-                    }
-                }
-            """.trimIndent()
-        )
-    }
 }
