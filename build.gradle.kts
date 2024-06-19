@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     compileOnly("org.purpurmc.purpur:purpur-api:1.21-R0.1-SNAPSHOT")
-    compileOnly("dev.jorel:commandapi-bukkit-core:9.5.0")
+    compileOnly("dev.jorel:commandapi-bukkit-core:9.5.1")
     compileOnly("dev.jorel:commandapi-bukkit-kotlin:9.5.1")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
